@@ -1,0 +1,53 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "sql/queries"
+    schema: "sql/schemas"
+    gen:
+      go:
+        out: "database"
+        overrides:
+          - column: '_products._id'
+            go_struct_tag: json:"id"
+          - column: '_products._created_at'
+            go_struct_tag: json:"-"
+          - column: '_products._updated_at'
+            go_struct_tag: json:"-"
+          - column: '_products._name'
+            go_struct_tag: json:"name" validate:"required,min=4,max=200"
+          - column: '_products._amount' 
+            go_struct_tag: json:"amount" validate:"required,min=1"
+          - column: '_products._carbohydrate'
+            go_struct_tag: json:"carbohydrate"
+          - column: '_products._protein'
+            go_struct_tag: json:"protein"
+          - column: '_products._fat'
+            go_struct_tag: json:"fat"
+
+          - column: '_reports._id'
+            go_struct_tag: json:"id"
+          - column: '_products._created_at'
+            go_struct_tag: json:"-"
+          - column: '_products._updated_at'
+            go_struct_tag: json:"-"
+          - column: '_reports._date'
+            go_struct_tag: json:"date"
+
+          - column: '_report_entries._id'
+            go_struct_tag: json:"id"
+          - column: '_products._created_at'
+            go_struct_tag: json:"-"
+          - column: '_products._updated_at'
+            go_struct_tag: json:"-"
+          - column: '_report_entries._product_id'
+            go_struct_tag: json:"product"
+          - column: '_report_entries._report_id'
+            go_struct_tag: json:"report"
+          - column: '_report_entries._amount'
+            go_struct_tag: json:"amount"
+          - column: '_report_entries._carbohydrate'
+            go_struct_tag: json:"carbohydrate"
+          - column: '_report_entries._protein'
+            go_struct_tag: json:"protein"
+          - column: '_report_entries._fat'
+            go_struct_tag: json:"fat"

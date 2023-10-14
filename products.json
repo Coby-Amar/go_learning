@@ -1,0 +1,702 @@
+[
+    {
+        "_name": "Tea - Herbal Orange Spice",
+        "_amount": 126,
+        "_carbohydrate": 1,
+        "_protein": 3,
+        "_fat": 3
+    },
+    {
+        "_name": "Campari",
+        "_amount": 124,
+        "_carbohydrate": 2,
+        "_protein": 2,
+        "_fat": 3
+    },
+    {
+        "_name": "Pepper - Black, Crushed",
+        "_amount": 38,
+        "_carbohydrate": 3,
+        "_protein": 2,
+        "_fat": 2
+    },
+    {
+        "_name": "Wine - White, Riesling, Semi - Dry",
+        "_amount": 2,
+        "_carbohydrate": 5,
+        "_protein": 4,
+        "_fat": 5
+    },
+    {
+        "_name": "Jicama",
+        "_amount": 157,
+        "_carbohydrate": 3,
+        "_protein": 3,
+        "_fat": 5
+    },
+    {
+        "_name": "Potato - Sweet",
+        "_amount": 75,
+        "_carbohydrate": 1,
+        "_protein": 4,
+        "_fat": 2
+    },
+    {
+        "_name": "Apricots - Halves",
+        "_amount": 34,
+        "_carbohydrate": 4,
+        "_protein": 3,
+        "_fat": 4
+    },
+    {
+        "_name": "Chocolate - Chips Compound",
+        "_amount": 184,
+        "_carbohydrate": 4,
+        "_protein": 3,
+        "_fat": 2
+    },
+    {
+        "_name": "Venison - Denver Leg Boneless",
+        "_amount": 86,
+        "_carbohydrate": 2,
+        "_protein": 3,
+        "_fat": 2
+    },
+    {
+        "_name": "Mackerel Whole Fresh",
+        "_amount": 69,
+        "_carbohydrate": 1,
+        "_protein": 2,
+        "_fat": 2
+    },
+    {
+        "_name": "Shrimp - Tiger 21/25",
+        "_amount": 48,
+        "_carbohydrate": 5,
+        "_protein": 4,
+        "_fat": 1
+    },
+    {
+        "_name": "Rum - Light, Captain Morgan",
+        "_amount": 191,
+        "_carbohydrate": 4,
+        "_protein": 5,
+        "_fat": 5
+    },
+    {
+        "_name": "Wine - Magnotta, Merlot Sr Vqa",
+        "_amount": 17,
+        "_carbohydrate": 1,
+        "_protein": 5,
+        "_fat": 1
+    },
+    {
+        "_name": "Tart Shells - Sweet, 3",
+        "_amount": 155,
+        "_carbohydrate": 2,
+        "_protein": 1,
+        "_fat": 5
+    },
+    {
+        "_name": "Napkin - Beverage 1 Ply",
+        "_amount": 129,
+        "_carbohydrate": 4,
+        "_protein": 1,
+        "_fat": 5
+    },
+    {
+        "_name": "Beer - Camerons Auburn",
+        "_amount": 144,
+        "_carbohydrate": 2,
+        "_protein": 1,
+        "_fat": 2
+    },
+    {
+        "_name": "Lettuce - Curly Endive",
+        "_amount": 178,
+        "_carbohydrate": 2,
+        "_protein": 2,
+        "_fat": 3
+    },
+    {
+        "_name": "Bar Mix - Pina Colada, 355 Ml",
+        "_amount": 44,
+        "_carbohydrate": 4,
+        "_protein": 3,
+        "_fat": 1
+    },
+    {
+        "_name": "Potatoes - Fingerling 4 Oz",
+        "_amount": 163,
+        "_carbohydrate": 1,
+        "_protein": 2,
+        "_fat": 2
+    },
+    {
+        "_name": "Apricots - Halves",
+        "_amount": 104,
+        "_carbohydrate": 1,
+        "_protein": 1,
+        "_fat": 2
+    },
+    {
+        "_name": "Tea - Decaf 1 Cup",
+        "_amount": 36,
+        "_carbohydrate": 1,
+        "_protein": 1,
+        "_fat": 3
+    },
+    {
+        "_name": "Dill - Primerba, Paste",
+        "_amount": 3,
+        "_carbohydrate": 2,
+        "_protein": 5,
+        "_fat": 5
+    },
+    {
+        "_name": "Radish - Black, Winter, Organic",
+        "_amount": 163,
+        "_carbohydrate": 2,
+        "_protein": 4,
+        "_fat": 4
+    },
+    {
+        "_name": "Coffee Beans - Chocolate",
+        "_amount": 199,
+        "_carbohydrate": 2,
+        "_protein": 1,
+        "_fat": 1
+    },
+    {
+        "_name": "Garam Marsala",
+        "_amount": 174,
+        "_carbohydrate": 4,
+        "_protein": 1,
+        "_fat": 1
+    },
+    {
+        "_name": "Curry Paste - Green Masala",
+        "_amount": 47,
+        "_carbohydrate": 3,
+        "_protein": 3,
+        "_fat": 1
+    },
+    {
+        "_name": "Juice - Apple Cider",
+        "_amount": 119,
+        "_carbohydrate": 1,
+        "_protein": 5,
+        "_fat": 2
+    },
+    {
+        "_name": "Beef - Rouladin, Sliced",
+        "_amount": 144,
+        "_carbohydrate": 5,
+        "_protein": 5,
+        "_fat": 3
+    },
+    {
+        "_name": "Icecream Cone - Areo Chocolate",
+        "_amount": 87,
+        "_carbohydrate": 4,
+        "_protein": 5,
+        "_fat": 3
+    },
+    {
+        "_name": "Oil - Avocado",
+        "_amount": 10,
+        "_carbohydrate": 4,
+        "_protein": 4,
+        "_fat": 5
+    },
+    {
+        "_name": "Crackers Cheez It",
+        "_amount": 47,
+        "_carbohydrate": 5,
+        "_protein": 2,
+        "_fat": 2
+    },
+    {
+        "_name": "Chocolate - Pistoles, Lactee, Milk",
+        "_amount": 71,
+        "_carbohydrate": 3,
+        "_protein": 5,
+        "_fat": 1
+    },
+    {
+        "_name": "Wine - Red, Pinot Noir, Chateau",
+        "_amount": 77,
+        "_carbohydrate": 5,
+        "_protein": 1,
+        "_fat": 5
+    },
+    {
+        "_name": "Soup - Campbells, Minestrone",
+        "_amount": 129,
+        "_carbohydrate": 3,
+        "_protein": 3,
+        "_fat": 2
+    },
+    {
+        "_name": "Cheese - Mix",
+        "_amount": 76,
+        "_carbohydrate": 3,
+        "_protein": 4,
+        "_fat": 5
+    },
+    {
+        "_name": "Cucumber - English",
+        "_amount": 168,
+        "_carbohydrate": 3,
+        "_protein": 5,
+        "_fat": 3
+    },
+    {
+        "_name": "Hersey Shakes",
+        "_amount": 180,
+        "_carbohydrate": 3,
+        "_protein": 2,
+        "_fat": 1
+    },
+    {
+        "_name": "Cake - French Pear Tart",
+        "_amount": 124,
+        "_carbohydrate": 4,
+        "_protein": 5,
+        "_fat": 1
+    },
+    {
+        "_name": "Coffee - Almond Amaretto",
+        "_amount": 180,
+        "_carbohydrate": 3,
+        "_protein": 4,
+        "_fat": 2
+    },
+    {
+        "_name": "Pesto - Primerba, Paste",
+        "_amount": 31,
+        "_carbohydrate": 1,
+        "_protein": 5,
+        "_fat": 5
+    },
+    {
+        "_name": "Pork - Chop, Frenched",
+        "_amount": 72,
+        "_carbohydrate": 1,
+        "_protein": 1,
+        "_fat": 5
+    },
+    {
+        "_name": "Thyme - Fresh",
+        "_amount": 9,
+        "_carbohydrate": 3,
+        "_protein": 2,
+        "_fat": 1
+    },
+    {
+        "_name": "Bay Leaf Fresh",
+        "_amount": 194,
+        "_carbohydrate": 4,
+        "_protein": 5,
+        "_fat": 3
+    },
+    {
+        "_name": "Bread - Flat Bread",
+        "_amount": 157,
+        "_carbohydrate": 4,
+        "_protein": 3,
+        "_fat": 3
+    },
+    {
+        "_name": "Pastry - Choclate Baked",
+        "_amount": 199,
+        "_carbohydrate": 2,
+        "_protein": 1,
+        "_fat": 3
+    },
+    {
+        "_name": "Carrots - Purple, Organic",
+        "_amount": 8,
+        "_carbohydrate": 1,
+        "_protein": 5,
+        "_fat": 3
+    },
+    {
+        "_name": "Soup - Canadian Pea, Dry Mix",
+        "_amount": 184,
+        "_carbohydrate": 5,
+        "_protein": 5,
+        "_fat": 5
+    },
+    {
+        "_name": "Oil - Truffle, Black",
+        "_amount": 184,
+        "_carbohydrate": 2,
+        "_protein": 1,
+        "_fat": 2
+    },
+    {
+        "_name": "Roe - Lump Fish, Red",
+        "_amount": 10,
+        "_carbohydrate": 2,
+        "_protein": 1,
+        "_fat": 4
+    },
+    {
+        "_name": "Tomatoes - Diced, Canned",
+        "_amount": 82,
+        "_carbohydrate": 1,
+        "_protein": 3,
+        "_fat": 2
+    },
+    {
+        "_name": "Veal - Provimi Inside",
+        "_amount": 20,
+        "_carbohydrate": 4,
+        "_protein": 4,
+        "_fat": 3
+    },
+    {
+        "_name": "Pasta - Rotini, Dry",
+        "_amount": 144,
+        "_carbohydrate": 5,
+        "_protein": 3,
+        "_fat": 5
+    },
+    {
+        "_name": "Sauce - Roasted Red Pepper",
+        "_amount": 82,
+        "_carbohydrate": 5,
+        "_protein": 5,
+        "_fat": 1
+    },
+    {
+        "_name": "Vegetable - Base",
+        "_amount": 69,
+        "_carbohydrate": 5,
+        "_protein": 1,
+        "_fat": 3
+    },
+    {
+        "_name": "Cheese - Mozzarella, Shredded",
+        "_amount": 111,
+        "_carbohydrate": 3,
+        "_protein": 2,
+        "_fat": 2
+    },
+    {
+        "_name": "Beef - Short Loin",
+        "_amount": 37,
+        "_carbohydrate": 4,
+        "_protein": 1,
+        "_fat": 1
+    },
+    {
+        "_name": "Chocolate - Milk, Callets",
+        "_amount": 108,
+        "_carbohydrate": 3,
+        "_protein": 3,
+        "_fat": 4
+    },
+    {
+        "_name": "Ham - Cooked",
+        "_amount": 41,
+        "_carbohydrate": 3,
+        "_protein": 4,
+        "_fat": 4
+    },
+    {
+        "_name": "Wine - Vineland Estate Semi - Dry",
+        "_amount": 154,
+        "_carbohydrate": 5,
+        "_protein": 3,
+        "_fat": 5
+    },
+    {
+        "_name": "Cheese - Feta",
+        "_amount": 93,
+        "_carbohydrate": 1,
+        "_protein": 2,
+        "_fat": 3
+    },
+    {
+        "_name": "Truffle Cups - Red",
+        "_amount": 96,
+        "_carbohydrate": 5,
+        "_protein": 3,
+        "_fat": 4
+    },
+    {
+        "_name": "Bacardi Raspberry",
+        "_amount": 24,
+        "_carbohydrate": 2,
+        "_protein": 3,
+        "_fat": 5
+    },
+    {
+        "_name": "Pears - Bartlett",
+        "_amount": 1,
+        "_carbohydrate": 4,
+        "_protein": 2,
+        "_fat": 3
+    },
+    {
+        "_name": "Syrup - Kahlua Chocolate",
+        "_amount": 164,
+        "_carbohydrate": 3,
+        "_protein": 2,
+        "_fat": 3
+    },
+    {
+        "_name": "Beer - Paulaner Hefeweisse",
+        "_amount": 29,
+        "_carbohydrate": 5,
+        "_protein": 3,
+        "_fat": 1
+    },
+    {
+        "_name": "Bacardi Raspberry",
+        "_amount": 194,
+        "_carbohydrate": 2,
+        "_protein": 4,
+        "_fat": 4
+    },
+    {
+        "_name": "Magnotta - Bel Paese White",
+        "_amount": 4,
+        "_carbohydrate": 4,
+        "_protein": 1,
+        "_fat": 5
+    },
+    {
+        "_name": "Beef - Kindney, Whole",
+        "_amount": 193,
+        "_carbohydrate": 1,
+        "_protein": 5,
+        "_fat": 4
+    },
+    {
+        "_name": "Edible Flower - Mixed",
+        "_amount": 166,
+        "_carbohydrate": 2,
+        "_protein": 2,
+        "_fat": 4
+    },
+    {
+        "_name": "Triple Sec - Mcguinness",
+        "_amount": 38,
+        "_carbohydrate": 5,
+        "_protein": 2,
+        "_fat": 4
+    },
+    {
+        "_name": "Pasta - Canelloni",
+        "_amount": 35,
+        "_carbohydrate": 2,
+        "_protein": 3,
+        "_fat": 5
+    },
+    {
+        "_name": "Beef - Ox Tail, Frozen",
+        "_amount": 168,
+        "_carbohydrate": 1,
+        "_protein": 3,
+        "_fat": 4
+    },
+    {
+        "_name": "Wood Chips - Regular",
+        "_amount": 144,
+        "_carbohydrate": 5,
+        "_protein": 1,
+        "_fat": 2
+    },
+    {
+        "_name": "Tart Shells - Savory, 3",
+        "_amount": 102,
+        "_carbohydrate": 2,
+        "_protein": 5,
+        "_fat": 1
+    },
+    {
+        "_name": "Spoon - Soup, Plastic",
+        "_amount": 186,
+        "_carbohydrate": 2,
+        "_protein": 4,
+        "_fat": 3
+    },
+    {
+        "_name": "Spring Roll Wrappers",
+        "_amount": 38,
+        "_carbohydrate": 1,
+        "_protein": 1,
+        "_fat": 4
+    },
+    {
+        "_name": "Mace Ground",
+        "_amount": 59,
+        "_carbohydrate": 5,
+        "_protein": 3,
+        "_fat": 5
+    },
+    {
+        "_name": "Cheese - Havarti, Roasted Garlic",
+        "_amount": 50,
+        "_carbohydrate": 1,
+        "_protein": 4,
+        "_fat": 2
+    },
+    {
+        "_name": "Frangelico",
+        "_amount": 181,
+        "_carbohydrate": 3,
+        "_protein": 1,
+        "_fat": 4
+    },
+    {
+        "_name": "Quail - Whole, Bone - In",
+        "_amount": 183,
+        "_carbohydrate": 3,
+        "_protein": 1,
+        "_fat": 2
+    },
+    {
+        "_name": "Wine - White, French Cross",
+        "_amount": 163,
+        "_carbohydrate": 1,
+        "_protein": 2,
+        "_fat": 4
+    },
+    {
+        "_name": "Chocolate - Semi Sweet, Calets",
+        "_amount": 177,
+        "_carbohydrate": 2,
+        "_protein": 5,
+        "_fat": 3
+    },
+    {
+        "_name": "Sauce - Salsa",
+        "_amount": 88,
+        "_carbohydrate": 1,
+        "_protein": 1,
+        "_fat": 3
+    },
+    {
+        "_name": "Butcher Twine 4r",
+        "_amount": 183,
+        "_carbohydrate": 5,
+        "_protein": 1,
+        "_fat": 4
+    },
+    {
+        "_name": "Veal - Insides Provini",
+        "_amount": 195,
+        "_carbohydrate": 2,
+        "_protein": 3,
+        "_fat": 1
+    },
+    {
+        "_name": "Anchovy Paste - 56 G Tube",
+        "_amount": 48,
+        "_carbohydrate": 1,
+        "_protein": 4,
+        "_fat": 1
+    },
+    {
+        "_name": "Pastry - Banana Muffin - Mini",
+        "_amount": 102,
+        "_carbohydrate": 2,
+        "_protein": 3,
+        "_fat": 2
+    },
+    {
+        "_name": "Appetizer - Crab And Brie",
+        "_amount": 199,
+        "_carbohydrate": 3,
+        "_protein": 5,
+        "_fat": 3
+    },
+    {
+        "_name": "Island Oasis - Strawberry",
+        "_amount": 124,
+        "_carbohydrate": 4,
+        "_protein": 1,
+        "_fat": 1
+    },
+    {
+        "_name": "Chocolate - Pistoles, White",
+        "_amount": 104,
+        "_carbohydrate": 5,
+        "_protein": 3,
+        "_fat": 4
+    },
+    {
+        "_name": "Bread Base - Goodhearth",
+        "_amount": 64,
+        "_carbohydrate": 2,
+        "_protein": 1,
+        "_fat": 4
+    },
+    {
+        "_name": "Pork - Loin, Bone - In",
+        "_amount": 114,
+        "_carbohydrate": 3,
+        "_protein": 5,
+        "_fat": 4
+    },
+    {
+        "_name": "Fudge - Chocolate Fudge",
+        "_amount": 78,
+        "_carbohydrate": 1,
+        "_protein": 3,
+        "_fat": 3
+    },
+    {
+        "_name": "Turkey - Breast, Boneless Sk On",
+        "_amount": 197,
+        "_carbohydrate": 2,
+        "_protein": 1,
+        "_fat": 4
+    },
+    {
+        "_name": "Potatoes - Parissienne",
+        "_amount": 66,
+        "_carbohydrate": 3,
+        "_protein": 1,
+        "_fat": 3
+    },
+    {
+        "_name": "Wine - Sauvignon Blanc Oyster",
+        "_amount": 90,
+        "_carbohydrate": 3,
+        "_protein": 5,
+        "_fat": 2
+    },
+    {
+        "_name": "Vinegar - White",
+        "_amount": 74,
+        "_carbohydrate": 3,
+        "_protein": 1,
+        "_fat": 3
+    },
+    {
+        "_name": "Crab - Back Fin Meat, Canned",
+        "_amount": 169,
+        "_carbohydrate": 1,
+        "_protein": 4,
+        "_fat": 5
+    },
+    {
+        "_name": "Coffee - Beans, Whole",
+        "_amount": 46,
+        "_carbohydrate": 3,
+        "_protein": 1,
+        "_fat": 2
+    },
+    {
+        "_name": "Rootbeer",
+        "_amount": 102,
+        "_carbohydrate": 5,
+        "_protein": 4,
+        "_fat": 5
+    }
+]

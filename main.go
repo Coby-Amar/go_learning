@@ -2,50 +2,49 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 
+	"github.com/coby-amar/go_learning/database"
+	"github.com/coby-amar/go_learning/handlers"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 )
 
-func main() {
-	godotenv.Load(".env")
-
+func initServer(router *chi.Mux) {
 	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("Port is not found in the environment")
-	}
-
-	router := chi.NewRouter()
-
-	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*", "http://*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"*"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
-		MaxAge:           30,
-	}))
-
-	v1Router := chi.NewRouter()
-	v1Router.Get("/ready", handlerRediness)
-	v1Router.Get("/error", handlerError)
-
-	router.Mount("/v1", v1Router)
-
 	server := &http.Server{
 		Handler: router,
 		Addr:    ":" + port,
 	}
-
-	log.Printf("Server starting on port %v", port)
+	slog.Info(fmt.Sprintln("Staring server on port:", port))
 	err := server.ListenAndServe()
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Fatal server couldnt start port:")
+	}
+}
+
+func main() {
+	godotenv.Load()
+	apiConf := handlers.CreateApiConfig()
+	if apiConf == nil {
+		slog.Error("CreateApiConfig returned nil")
+		return
 	}
 
-	fmt.Println("Port: ", port)
+	router := chi.NewRouter()
+	v1router := chi.NewRouter()
+	router.Use(handlers.LoggingMiddleware())
+
+	v1router.Get("/products", apiConf.HandleGetProducts)
+	v1router.Post("/products", handlers.ParseJSONAndValidateMiddleware[database.CreateProductParams](apiConf.HandleCreateProduct))
+	v1router.Put("/products/{productId}", handlers.ParseJSONAndValidateMiddleware[database.UpdateProductParams](apiConf.HandleUpdateProduct))
+
+	v1router.Get("/reports", apiConf.HandleGetReports)
+	v1router.Post("/reports", apiConf.HandleCreateReport)
+	router.Mount("/api/v1", v1router)
+
+	initServer(router)
+
 }
