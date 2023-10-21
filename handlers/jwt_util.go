@@ -1,0 +1,65 @@
+package handlers
+
+import (
+	"log/slog"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+)
+
+func createJWTCookie(user_id uuid.UUID, jwtUserSecretKey string) *http.Cookie {
+	expiresAt := time.Now().Add(time.Minute * 30)
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        user_id.String(),
+			ExpiresAt: jwt.NewNumericDate(expiresAt),
+		},
+	})
+	token, err := jwtToken.SignedString([]byte(jwtUserSecretKey))
+	if err != nil {
+		slog.Error("Failed to SignedString cookie", ERROR, err)
+		return nil
+	}
+	secure, err := strconv.ParseBool(os.Getenv(PRODUCTION))
+	if err != nil {
+		secure = true
+	}
+	return &http.Cookie{
+		Name:     JWT_COOKIE,
+		Path:     "/",
+		Value:    token,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   expiresAt.Second(),
+		Secure:   secure,
+	}
+}
+
+func validateJWT(jwtCookie *http.Cookie, jwtUserSecretKey string) (uuid.UUID, error) {
+	claims := jwtClaims{}
+	parsedToken, err := jwt.ParseWithClaims(jwtCookie.Value, &claims, func(t *jwt.Token) (interface{}, error) {
+		_, ok := t.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			slog.Error("Failed to unsign jwt")
+			return "", unauthorizedError
+		}
+		if expTime, err := t.Claims.GetExpirationTime(); err != nil || expTime.Before(time.Now()) {
+			slog.Error("Token expired or GetExpirationTime error", ERROR, err)
+			return "", unauthorizedError
+		}
+		return []byte(jwtUserSecretKey), nil
+	})
+	if err != nil {
+		slog.Error("Failed to Parse jwt", ERROR, err)
+		return uuid.Nil, unauthorizedError
+	}
+	if !parsedToken.Valid {
+		slog.Error("Invalid token")
+		return uuid.Nil, unauthorizedError
+	}
+	return uuid.MustParse(claims.ID), nil
+}

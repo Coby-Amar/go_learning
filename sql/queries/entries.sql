@@ -3,9 +3,9 @@ INSERT INTO _report_entries(
     _product_id,
     _report_id,
     _amount,
-    _carbohydrate,
-    _protein,
-    _fat
+    _carbohydrates,
+    _proteins,
+    _fats
 )
 VALUES ($1,$2,$3,$4,$5,$6)
 RETURNING *;
@@ -14,9 +14,10 @@ RETURNING *;
 UPDATE _report_entries
 SET 
     _amount = $2,
-    _carbohydrate = $3,
-    _protein = $4,
-    _fat = $5
+    _carbohydrates = $3,
+    _proteins = $4,
+    _fats = $5,
+    _updated_at = NOW()
 WHERE _report_entries._id = $1
 RETURNING *;
 

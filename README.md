@@ -1,4 +1,5 @@
 # DEV - Commands
+run the app `go build && ./go_learning.exe`
 ## MUST CD TO SQL FOLDER FIRST
 `goose postgres "host=localhost port=5432 user=postgres password=%s dbname=go_learning"`
 ## ONLY IN CMD PROPT

@@ -35,7 +35,7 @@ func LoggingMiddleware() func(http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			defer func() {
 				if err := recover(); err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
+					respondWithInternalServerError(w)
 					slog.Error(
 						"Uncaught panic",
 						"err", err,

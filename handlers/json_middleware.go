@@ -2,37 +2,37 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
+	"errors"
+	"io"
+	"log/slog"
 	"net/http"
-	"strings"
 
 	"github.com/go-playground/validator"
 )
 
-type jsonHandler[T interface{}] func(http.ResponseWriter, *http.Request, T)
-type ParamsType[T interface{}] struct {
-	params T
+func parseJSONAndValidateFromRequest[T interface{}](body io.ReadCloser) (T, error) {
+	paramsContainer := jsonParams[T]{}
+	decodeErr := json.NewDecoder(body).Decode(&paramsContainer.params)
+	if decodeErr != nil {
+		slog.Error("Failed to decode", ERROR, decodeErr)
+		return paramsContainer.params, errors.New("couldnt decode json")
+	}
+	if validationErr := validator.New().Struct(paramsContainer.params); validationErr != nil {
+		slog.Error("Failed to validate", ERROR, validationErr)
+		return paramsContainer.params, errors.New("couldnt decode json")
+	}
+	return paramsContainer.params, nil
+
 }
 
 func ParseJSONAndValidateMiddleware[T interface{}](handler jsonHandler[T]) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		paramsContainer := ParamsType[T]{}
-		decodeErr := json.NewDecoder(r.Body).Decode(&paramsContainer.params)
-		if decodeErr != nil {
-			log.Println("Decode body error:", decodeErr)
-			if strings.Contains(decodeErr.Error(), "cannot unmarshal") {
-				respondWithError(w, http.StatusBadRequest, "Malformed request")
-			} else {
-				respondWithError(w, http.StatusInternalServerError, "")
-			}
+		params, err := parseJSONAndValidateFromRequest[T](r.Body)
+		if err != nil {
+			respondWithBadRequest(w)
 			return
 		}
-		if validationErr := validator.New().Struct(paramsContainer.params); validationErr != nil {
-			log.Println("Validate body error: ", validationErr)
-			respondWithError(w, http.StatusBadRequest, "Malformed request")
-			return
-		}
-		handler(w, r, paramsContainer.params)
+		handler(w, r, params)
 	}
 
 }

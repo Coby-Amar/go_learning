@@ -1,5 +1,7 @@
 package handlers
 
-func dbErrorMapping(err error) {
+import "errors"
 
-}
+var unauthorizedError = errors.New("unauthorized")
+
+var forbiddenError = errors.New("forbidden")

@@ -34,17 +34,36 @@ func main() {
 	}
 
 	router := chi.NewRouter()
-	v1router := chi.NewRouter()
 	router.Use(handlers.LoggingMiddleware())
+	router.Get("/login", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.html")
+	})
+	router.Get("/register", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.html")
+	})
+	router.Get("/home", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.html")
+	})
 
-	v1router.Get("/products", apiConf.HandleGetProducts)
-	v1router.Post("/products", handlers.ParseJSONAndValidateMiddleware[database.CreateProductParams](apiConf.HandleCreateProduct))
-	v1router.Put("/products/{productId}", handlers.ParseJSONAndValidateMiddleware[database.UpdateProductParams](apiConf.HandleUpdateProduct))
+	v1Router := chi.NewRouter()
+	router.Mount("/api/v1", v1Router)
+	v1Router.Use(apiConf.AuthenticationMiddleware)
 
-	v1router.Get("/reports", apiConf.HandleGetReports)
-	v1router.Post("/reports", apiConf.HandleCreateReport)
-	router.Mount("/api/v1", v1router)
+	v1AuthRouter := chi.NewRouter()
+	v1Router.Mount("/auth", v1AuthRouter)
+
+	v1AuthRouter.Post("/register", apiConf.HandleRegister)
+	v1AuthRouter.Post("/login", apiConf.HandleLogin)
+	v1AuthRouter.Post("/logout", apiConf.HandleLogout)
+
+	v1Router.Get("/healthz", apiConf.HandleHealthZ)
+
+	v1Router.Get("/products", apiConf.HandleGetProducts)
+	v1Router.Post("/products", handlers.ParseJSONAndValidateMiddleware[database.CreateProductParams](apiConf.HandleCreateProduct))
+	v1Router.Put("/products/{productId}", handlers.ParseJSONAndValidateMiddleware[database.UpdateProductParams](apiConf.HandleUpdateProduct))
+
+	v1Router.Get("/reports", apiConf.HandleGetReports)
+	v1Router.Post("/reports", handlers.ParseJSONAndValidateMiddleware[handlers.UserRequestReport](apiConf.HandleCreateReport))
 
 	initServer(router)
-
 }

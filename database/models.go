@@ -19,23 +19,48 @@ type Product struct {
 	Carbohydrate int16     `json:"carbohydrate"`
 	Protein      int16     `json:"protein"`
 	Fat          int16     `json:"fat"`
+	UserID       uuid.UUID
 }
 
 type Report struct {
-	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Date      time.Time `json:"date"`
+	ID             uuid.UUID `json:"id"`
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	Date           time.Time `json:"date"`
+	AmoutOfEntries int16
+	Carbohydrates  int16
+	Proteins       int16
+	Fats           int16
+	UserID         uuid.UUID
 }
 
 type ReportEntry struct {
-	ID           uuid.UUID `json:"id"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	ProductID    uuid.UUID `json:"product"`
-	ReportID     uuid.UUID `json:"report"`
-	Amount       int16     `json:"amount"`
-	Carbohydrate int16     `json:"carbohydrate"`
-	Protein      int16     `json:"protein"`
-	Fat          int16     `json:"fat"`
+	ID            uuid.UUID `json:"id"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Amount        int16 `json:"amount"`
+	Carbohydrates int16
+	Proteins      int16
+	Fats          int16
+	ProductID     uuid.UUID `json:"product"`
+	ReportID      uuid.UUID `json:"report"`
+}
+
+type User struct {
+	ID          uuid.UUID
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	LastLogin   time.Time
+	Active      bool
+	Name        string
+	Email       string
+	PhoneNumber string
+}
+
+type Vault struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	HashedPw  string
+	UserID    uuid.UUID
 }

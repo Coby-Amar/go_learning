@@ -2,11 +2,10 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
 	"log"
+	"log/slog"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/coby-amar/go_learning/database"
 )
@@ -18,8 +17,8 @@ func getReportEntries(conf *ApiConfig, ctx context.Context, dbReport database.Re
 		return
 	}
 	ch <- userGetReport{
-		Date:    dbReport.Date,
-		Entries: entries,
+		userReport: userReport{Date: dbReport.Date},
+		Entries:    entries,
 	}
 	wg.Done()
 }
@@ -27,8 +26,8 @@ func getReportEntries(conf *ApiConfig, ctx context.Context, dbReport database.Re
 func (conf *ApiConfig) HandleGetReports(w http.ResponseWriter, r *http.Request) {
 	reports, err := conf.DB.GetAllReports(r.Context())
 	if err != nil {
-		log.Fatal("DB error on GetAllProducts request:", err)
-		respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve all products")
+		slog.Error("DB error on GetAllProducts", ERROR, err)
+		respondWithInternalServerError(w)
 		return
 	}
 	reportsLength := len(reports)
@@ -51,34 +50,24 @@ func (conf *ApiConfig) HandleGetReports(w http.ResponseWriter, r *http.Request) 
 	respondWithJSON(w, http.StatusOK, froundReports)
 }
 
-func (conf *ApiConfig) HandleCreateReport(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	type userReport struct {
-		Date    time.Time                          `json:"date"`
-		Entries []database.CreateReportEntryParams `json:"entries"`
-	}
-	params := userReport{}
-	err := decoder.Decode(&params)
+func (conf *ApiConfig) HandleCreateReport(w http.ResponseWriter, r *http.Request, params UserRequestReport) {
+	dbCreatedReport, err := conf.DB.CreateReport(r.Context(), database.CreateReportParams{
+		Date:           params.Date,
+		AmoutOfEntries: int16(len(params.Entries)),
+	})
 	if err != nil {
-		log.Println("CreateReportWithEntries error: ", err)
-		respondWithError(w, 400, "Given parameters are invalid or missing")
+		slog.Error("DB error on CreateReport", ERROR, err)
+		respondWithInternalServerError(w)
 		return
 	}
-	log.Println(params.Date)
-	createdReport, err := conf.DB.CreateReport(r.Context(), params.Date)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Error creating product")
-		log.Println(err)
-		return
-	}
-	reportForUser := userCreateReport{
-		Date: createdReport.Date,
+	reportForUser := userCreatedReport{
+		userReport: userReport{Date: dbCreatedReport.Date},
 	}
 	for _, entry := range params.Entries {
-		entry.ReportID = createdReport.ID
+		entry.ReportID = dbCreatedReport.ID
 		createdEntry, err := conf.DB.CreateReportEntry(r.Context(), entry)
 		if err != nil {
-			log.Println(err)
+			slog.Error("Failed to create entry", "entry", entry, ERROR, err)
 			continue
 		}
 		reportForUser.Entries = append(reportForUser.Entries, createdEntry)
