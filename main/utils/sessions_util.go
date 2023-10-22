@@ -1,4 +1,4 @@
-package handlers
+package utils
 
 import (
 	"log/slog"
@@ -11,8 +11,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func (conf *ApiConfig) createUserSession(w http.ResponseWriter, r *http.Request, userId pgtype.UUID) bool {
-	session, err := conf.STORE.Get(r, SESSION)
+func CreateUserSession(cwrar *ConfigWithRequestAndResponse, userId pgtype.UUID) bool {
+	session, err := cwrar.Config.STORE.Get(cwrar.R, SESSION)
 	if err != nil {
 		slog.Error("Error getting session", ERROR, err)
 		return false
@@ -28,7 +28,7 @@ func (conf *ApiConfig) createUserSession(w http.ResponseWriter, r *http.Request,
 		Secure:   secure,
 		MaxAge:   time.Now().Add(time.Second * 10).Second(),
 	}
-	sessionParams := sessionParameters{
+	sessionParams := SessionParameters{
 		UserID:            userId,
 		Active:            true,
 		CountResetTime:    time.Now().Add(time.Minute),
@@ -36,7 +36,7 @@ func (conf *ApiConfig) createUserSession(w http.ResponseWriter, r *http.Request,
 		RequestsCount:     0,
 	}
 	session.Values[SESSION_PARAMETERS] = &sessionParams
-	if err := session.Save(r, w); err != nil {
+	if err := session.Save(cwrar.R, cwrar.W); err != nil {
 		slog.Error("Saved session fail", ERROR, err)
 		return false
 	}
@@ -44,14 +44,14 @@ func (conf *ApiConfig) createUserSession(w http.ResponseWriter, r *http.Request,
 	return true
 }
 
-func (conf *ApiConfig) getSessionParams(r *http.Request) *sessionParameters {
-	session, err := conf.STORE.Get(r, SESSION)
+func GetSessionParams(cwrar *ConfigWithRequestAndResponse) *SessionParameters {
+	session, err := cwrar.Config.STORE.Get(cwrar.R, SESSION)
 	if err != nil {
 		slog.Error("getSessionParams failed", ERROR, err)
 		return nil
 	}
 	val := session.Values[SESSION_PARAMETERS]
-	params, ok := val.(*sessionParameters)
+	params, ok := val.(*SessionParameters)
 	if !ok {
 		slog.Error("getSessionParams failed to type-assert params", ERROR, params)
 		return nil

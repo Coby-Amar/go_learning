@@ -32,6 +32,11 @@ SET
 WHERE _vault._user_id = $1
 RETURNING *;
 
+-- name: GetUserByEmail :one
+SELECT _u.*, _v._hashed_pw AS _password FROM _users AS _u
+JOIN _vault AS _v ON _v._user_id = _u._id 
+WHERE _u._email = $1;
+
 -- name: GetUserByID :one
 SELECT u.*, v._hashed_pw AS _password FROM _users AS u
 JOIN _vault AS v ON v._user_id = u._id 

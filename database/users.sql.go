@@ -74,6 +74,41 @@ func (q *Queries) DeleteUser(ctx context.Context, ID pgtype.UUID) error {
 	return err
 }
 
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT _u._id, _u._created_at, _u._updated_at, _u._last_login, _u._active, _u._name, _u._email, _u._phone_number, _v._hashed_pw AS _password FROM _users AS _u
+JOIN _vault AS _v ON _v._user_id = _u._id 
+WHERE _u._email = $1
+`
+
+type GetUserByEmailRow struct {
+	ID          pgtype.UUID
+	CreatedAt   pgtype.Timestamp
+	UpdatedAt   pgtype.Timestamp
+	LastLogin   pgtype.Timestamp
+	Active      bool
+	Name        string
+	Email       string
+	PhoneNumber string
+	Password    string
+}
+
+func (q *Queries) GetUserByEmail(ctx context.Context, Email string) (GetUserByEmailRow, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, Email)
+	var i GetUserByEmailRow
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.LastLogin,
+		&i.Active,
+		&i.Name,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.Password,
+	)
+	return i, err
+}
+
 const getUserByID = `-- name: GetUserByID :one
 SELECT u._id, u._created_at, u._updated_at, u._last_login, u._active, u._name, u._email, u._phone_number, v._hashed_pw AS _password FROM _users AS u
 JOIN _vault AS v ON v._user_id = u._id 

@@ -1,4 +1,4 @@
-package handlers
+package utils
 
 const (
 	SOMETHING_WENT_WRONG      = "Something went wrong"
