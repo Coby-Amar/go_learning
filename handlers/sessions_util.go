@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func (conf *ApiConfig) createUserSession(w http.ResponseWriter, r *http.Request, userId uuid.UUID) bool {
+func (conf *ApiConfig) createUserSession(w http.ResponseWriter, r *http.Request, userId pgtype.UUID) bool {
 	session, err := conf.STORE.Get(r, SESSION)
 	if err != nil {
 		slog.Error("Error getting session", ERROR, err)
@@ -47,13 +47,13 @@ func (conf *ApiConfig) createUserSession(w http.ResponseWriter, r *http.Request,
 func (conf *ApiConfig) getSessionParams(r *http.Request) *sessionParameters {
 	session, err := conf.STORE.Get(r, SESSION)
 	if err != nil {
-		slog.Error("Error getting session", ERROR, err)
+		slog.Error("getSessionParams failed", ERROR, err)
 		return nil
 	}
 	val := session.Values[SESSION_PARAMETERS]
 	params, ok := val.(*sessionParameters)
 	if !ok {
-		slog.Error("Error type-assert session params", ERROR, params)
+		slog.Error("getSessionParams failed to type-assert params", ERROR, params)
 		return nil
 	}
 	return params

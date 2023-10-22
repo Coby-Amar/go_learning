@@ -7,55 +7,17 @@ package database
 
 import (
 	"context"
-	"time"
 
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createReportEntry = `-- name: CreateReportEntry :one
-INSERT INTO _report_entries(
-    _product_id,
-    _report_id,
-    _amount,
-    _carbohydrates,
-    _proteins,
-    _fats
-)
-VALUES ($1,$2,$3,$4,$5,$6)
-RETURNING _id, _created_at, _updated_at, _amount, _carbohydrates, _proteins, _fats, _product_id, _report_id
-`
-
-type CreateReportEntryParams struct {
-	ProductID     uuid.UUID `json:"product"`
-	ReportID      uuid.UUID `json:"report"`
-	Amount        int16     `json:"amount"`
-	Carbohydrates int16
-	Proteins      int16
-	Fats          int16
-}
-
-func (q *Queries) CreateReportEntry(ctx context.Context, arg CreateReportEntryParams) (ReportEntry, error) {
-	row := q.db.QueryRowContext(ctx, createReportEntry,
-		arg.ProductID,
-		arg.ReportID,
-		arg.Amount,
-		arg.Carbohydrates,
-		arg.Proteins,
-		arg.Fats,
-	)
-	var i ReportEntry
-	err := row.Scan(
-		&i.ID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Amount,
-		&i.Carbohydrates,
-		&i.Proteins,
-		&i.Fats,
-		&i.ProductID,
-		&i.ReportID,
-	)
-	return i, err
+type CreateReportEntriesParams struct {
+	ProductID     pgtype.UUID `json:"productId" validate:"required,uuid4"`
+	ReportID      pgtype.UUID `json:"reportId" validate:"uuid4"`
+	Amount        int16       `json:"amount" validate:"required,min=0"`
+	Carbohydrates int16       `json:"carbohydrates" validate:"required,min=0"`
+	Proteins      int16       `json:"proteins" validate:"required,min=0"`
+	Fats          int16       `json:"fats" validate:"required,min=0"`
 }
 
 const getReportEntries = `-- name: GetReportEntries :many
@@ -66,20 +28,20 @@ WHERE _reports._id = $1
 `
 
 type GetReportEntriesRow struct {
-	ID            uuid.UUID `json:"id"`
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	Amount        int16 `json:"amount"`
-	Carbohydrates int16
-	Proteins      int16
-	Fats          int16
-	ProductID     uuid.UUID `json:"product"`
-	ReportID      uuid.UUID `json:"report"`
-	Name          string    `json:"name" validate:"required,min=4,max=200"`
+	ID            pgtype.UUID `json:"id"`
+	CreatedAt     pgtype.Timestamp
+	UpdatedAt     pgtype.Timestamp
+	Amount        int16       `json:"amount" validate:"required,min=0"`
+	Carbohydrates int16       `json:"carbohydrates" validate:"required,min=0"`
+	Proteins      int16       `json:"proteins" validate:"required,min=0"`
+	Fats          int16       `json:"fats" validate:"required,min=0"`
+	ProductID     pgtype.UUID `json:"productId" validate:"required,uuid4"`
+	ReportID      pgtype.UUID `json:"reportId" validate:"uuid4"`
+	Name          string      `json:"name" validate:"required,min=4,max=200"`
 }
 
-func (q *Queries) GetReportEntries(ctx context.Context, ID uuid.UUID) ([]GetReportEntriesRow, error) {
-	rows, err := q.db.QueryContext(ctx, getReportEntries, ID)
+func (q *Queries) GetReportEntries(ctx context.Context, ID pgtype.UUID) ([]GetReportEntriesRow, error) {
+	rows, err := q.db.Query(ctx, getReportEntries, ID)
 	if err != nil {
 		return nil, err
 	}
@@ -103,9 +65,6 @@ func (q *Queries) GetReportEntries(ctx context.Context, ID uuid.UUID) ([]GetRepo
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -125,15 +84,15 @@ RETURNING _id, _created_at, _updated_at, _amount, _carbohydrates, _proteins, _fa
 `
 
 type UpdateReportEntryParams struct {
-	ID            uuid.UUID `json:"id"`
-	Amount        int16     `json:"amount"`
-	Carbohydrates int16
-	Proteins      int16
-	Fats          int16
+	ID            pgtype.UUID `json:"id"`
+	Amount        int16       `json:"amount" validate:"required,min=0"`
+	Carbohydrates int16       `json:"carbohydrates" validate:"required,min=0"`
+	Proteins      int16       `json:"proteins" validate:"required,min=0"`
+	Fats          int16       `json:"fats" validate:"required,min=0"`
 }
 
 func (q *Queries) UpdateReportEntry(ctx context.Context, arg UpdateReportEntryParams) (ReportEntry, error) {
-	row := q.db.QueryRowContext(ctx, updateReportEntry,
+	row := q.db.QueryRow(ctx, updateReportEntry,
 		arg.ID,
 		arg.Amount,
 		arg.Carbohydrates,

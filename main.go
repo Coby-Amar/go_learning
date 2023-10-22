@@ -63,7 +63,7 @@ func main() {
 	v1Router.Put("/products/{productId}", handlers.ParseJSONAndValidateMiddleware[database.UpdateProductParams](apiConf.HandleUpdateProduct))
 
 	v1Router.Get("/reports", apiConf.HandleGetReports)
-	v1Router.Post("/reports", handlers.ParseJSONAndValidateMiddleware[handlers.UserRequestReport](apiConf.HandleCreateReport))
+	v1Router.Post("/reports", handlers.ParseJSONAndValidateMiddleware[handlers.UserCreateReportWithEntries](apiConf.HandleCreateReport))
 
 	initServer(router)
 }

@@ -7,36 +7,40 @@ package database
 
 import (
 	"context"
-	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createReport = `-- name: CreateReport :one
 INSERT INTO _reports(
     _date,
     _amout_of_entries,
-    _carbohydrates, 
-    _proteins,
-    _fats
+    _carbohydrates_total,
+    _proteins_total,
+    _fats_total,
+    _user_id
 )
-VALUES ($1,$2,$3,$4,$5)
-RETURNING _id, _created_at, _updated_at, _date, _amout_of_entries, _carbohydrates, _proteins, _fats, _user_id
+VALUES ($1,$2,$3,$4,$5,$6)
+RETURNING _id, _created_at, _updated_at, _date, _amout_of_entries, _carbohydrates_total, _proteins_total, _fats_total, _user_id
 `
 
 type CreateReportParams struct {
-	Date           time.Time `json:"date"`
-	AmoutOfEntries int16
-	Carbohydrates  int16
-	Proteins       int16
-	Fats           int16
+	Date               pgtype.Date `json:"date"`
+	AmoutOfEntries     int16       `json:"numberOfEntries"`
+	CarbohydratesTotal int16       `json:"carbohydratesTotal"`
+	ProteinsTotal      int16       `json:"proteinsTotal"`
+	FatsTotal          int16       `json:"fatsTotal"`
+	UserID             pgtype.UUID
 }
 
 func (q *Queries) CreateReport(ctx context.Context, arg CreateReportParams) (Report, error) {
-	row := q.db.QueryRowContext(ctx, createReport,
+	row := q.db.QueryRow(ctx, createReport,
 		arg.Date,
 		arg.AmoutOfEntries,
-		arg.Carbohydrates,
-		arg.Proteins,
-		arg.Fats,
+		arg.CarbohydratesTotal,
+		arg.ProteinsTotal,
+		arg.FatsTotal,
+		arg.UserID,
 	)
 	var i Report
 	err := row.Scan(
@@ -45,20 +49,21 @@ func (q *Queries) CreateReport(ctx context.Context, arg CreateReportParams) (Rep
 		&i.UpdatedAt,
 		&i.Date,
 		&i.AmoutOfEntries,
-		&i.Carbohydrates,
-		&i.Proteins,
-		&i.Fats,
+		&i.CarbohydratesTotal,
+		&i.ProteinsTotal,
+		&i.FatsTotal,
 		&i.UserID,
 	)
 	return i, err
 }
 
-const getAllReports = `-- name: GetAllReports :many
-SELECT _id, _created_at, _updated_at, _date, _amout_of_entries, _carbohydrates, _proteins, _fats, _user_id FROM _reports
+const getAllUserReports = `-- name: GetAllUserReports :many
+SELECT _id, _created_at, _updated_at, _date, _amout_of_entries, _carbohydrates_total, _proteins_total, _fats_total, _user_id FROM _reports
+WHERE _reports._user_id = $1
 `
 
-func (q *Queries) GetAllReports(ctx context.Context) ([]Report, error) {
-	rows, err := q.db.QueryContext(ctx, getAllReports)
+func (q *Queries) GetAllUserReports(ctx context.Context, UserID pgtype.UUID) ([]Report, error) {
+	rows, err := q.db.Query(ctx, getAllUserReports, UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -72,17 +77,14 @@ func (q *Queries) GetAllReports(ctx context.Context) ([]Report, error) {
 			&i.UpdatedAt,
 			&i.Date,
 			&i.AmoutOfEntries,
-			&i.Carbohydrates,
-			&i.Proteins,
-			&i.Fats,
+			&i.CarbohydratesTotal,
+			&i.ProteinsTotal,
+			&i.FatsTotal,
 			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err

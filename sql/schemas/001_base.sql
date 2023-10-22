@@ -13,11 +13,8 @@ CREATE TABLE _users (
 );
 
 CREATE TABLE _vault (
-    _id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(), 
-    _created_at TIMESTAMP NOT NULL DEFAULT NOW(), 
-    _updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    _user_id UUID NOT NULL PRIMARY KEY, 
     _hashed_pw CHAR(64) NOT NULL,
-    _user_id UUID NOT NULL UNIQUE,
     FOREIGN KEY (_user_id) REFERENCES _users(_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -31,8 +28,10 @@ CREATE TABLE _products (
     _protein SMALLINT NOT NULL DEFAULT 0 CHECK(_protein > -1),
     _fat SMALLINT NOT NULL DEFAULT 0 CHECK(_fat > -1),
     _user_id UUID NOT NULL,
-    FOREIGN KEY (_user_id) REFERENCES _users(_id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (_user_id) REFERENCES _users(_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
+
+CREATE INDEX _products_fkey_user_id ON _products(_user_id);
 
 CREATE TABLE _reports (
     _id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -40,12 +39,14 @@ CREATE TABLE _reports (
     _updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     _date DATE NOT NULL UNIQUE,
     _amout_of_entries SMALLINT NOT NULL CHECK(_amout_of_entries > 0),
-    _carbohydrates SMALLINT NOT NULL DEFAULT 0 CHECK(_carbohydrates > -1), 
-    _proteins SMALLINT NOT NULL DEFAULT 0 CHECK(_proteins > -1),
-    _fats SMALLINT NOT NULL DEFAULT 0 CHECK(_fats > -1),
+    _carbohydrates_total SMALLINT NOT NULL DEFAULT 0 CHECK(_carbohydrates_total > -1), 
+    _proteins_total SMALLINT NOT NULL DEFAULT 0 CHECK(_proteins_total > -1),
+    _fats_total SMALLINT NOT NULL DEFAULT 0 CHECK(_fats_total > -1),
     _user_id UUID NOT NULL,
-    FOREIGN KEY (_user_id) REFERENCES _users(_id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (_user_id) REFERENCES _users(_id) ON DELETE CASCADE ON UPDATE NO ACTION
  );
+
+CREATE INDEX _reports_fkey_user_id ON _reports(_user_id);
 
 CREATE TABLE _report_entries (
     _id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(), 
@@ -61,6 +62,7 @@ CREATE TABLE _report_entries (
     FOREIGN KEY(_report_id) REFERENCES _reports(_id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
+CREATE INDEX _report_entries_fkey_report_id ON _report_entries(_report_id);
 -- +goose Down
 
 DROP TABLE _report_entries;

@@ -6,14 +6,19 @@ import (
 
 	"github.com/coby-amar/go_learning/database"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type ApiConfig struct {
 	DB             *database.Queries
 	STORE          *sessions.CookieStore
 	JWT_SECRET_KEY string
+}
+
+type UserCreateReportWithEntries struct {
+	Report  database.CreateReportParams          `json:"report" validate:"required"`
+	Entries []database.CreateReportEntriesParams `json:"entries" validate:"required,min=1,max=20"`
 }
 
 type errorResponse struct {
@@ -27,10 +32,11 @@ type jsonParams[T interface{}] struct {
 
 type jwtClaims struct {
 	jwt.RegisteredClaims
+	UserID pgtype.UUID
 }
 
 type sessionParameters struct {
-	UserID            uuid.UUID
+	UserID            pgtype.UUID
 	Active            bool
 	CountResetTime    time.Time
 	RequestsPerMinute int
@@ -38,32 +44,13 @@ type sessionParameters struct {
 }
 
 type registrationJson struct {
-	Username    string `json:"username" validate:"required,email"`
-	Name        string `json:"name" validate:"required"`
-	PhoneNumber string `json:"phonenumber" validate:"required"`
-	Password    string `json:"password" validate:"required,min=8,max=70"`
+	Username    string `json:"username" validate:"required,email,max=50"`
+	Name        string `json:"name" validate:"required,min=4,max=50"`
+	PhoneNumber string `json:"phonenumber" validate:"required,min=8,max=10"`
+	Password    string `json:"password" validate:"required,min=8,max=30,containsany=!@#?"`
 }
 
 type loginJson struct {
-	Username string `json:"username" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=8,max=70"`
-}
-
-type userReport struct {
-	Date time.Time `json:"date"`
-}
-
-type userGetReport struct {
-	userReport
-	Entries []database.GetReportEntriesRow `json:"entries"`
-}
-
-type UserRequestReport struct {
-	userReport
-	Entries []database.CreateReportEntryParams `json:"entries"`
-}
-
-type userCreatedReport struct {
-	userReport
-	Entries []database.ReportEntry `json:"entries"`
+	Username string `json:"username" validate:"required,email,max=50"`
+	Password string `json:"password" validate:"required,min=8,max=30"`
 }

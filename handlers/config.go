@@ -1,18 +1,19 @@
 package handlers
 
 import (
-	"database/sql"
+	"context"
 	"encoding/gob"
 	"log/slog"
 	"os"
 
 	"github.com/coby-amar/go_learning/database"
 	"github.com/gorilla/sessions"
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5"
 )
 
 func CreateApiConfig() *ApiConfig {
-	connection, err := sql.Open("postgres", os.Getenv(DATABASE_URL))
+
+	connection, err := pgx.Connect(context.Background(), os.Getenv(DATABASE_URL))
 	if err != nil {
 		slog.Error("Failed to connect to database", ERROR, err)
 		return nil

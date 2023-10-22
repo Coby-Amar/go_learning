@@ -1,4 +1,4 @@
--- name: CreateReportEntry :one
+-- name: CreateReportEntries :copyfrom
 INSERT INTO _report_entries(
     _product_id,
     _report_id,
@@ -7,8 +7,7 @@ INSERT INTO _report_entries(
     _proteins,
     _fats
 )
-VALUES ($1,$2,$3,$4,$5,$6)
-RETURNING *;
+VALUES ($1,$2,$3,$4,$5,$6);
 
 -- name: UpdateReportEntry :one
 UPDATE _report_entries

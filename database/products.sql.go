@@ -8,7 +8,7 @@ package database
 import (
 	"context"
 
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createProduct = `-- name: CreateProduct :one
@@ -25,7 +25,7 @@ RETURNING _id, _created_at, _updated_at, _name, _amount, _carbohydrate, _protein
 `
 
 type CreateProductParams struct {
-	UserID       uuid.UUID
+	UserID       pgtype.UUID
 	Name         string `json:"name" validate:"required,min=4,max=200"`
 	Amount       int16  `json:"amount" validate:"required,min=1"`
 	Carbohydrate int16  `json:"carbohydrate"`
@@ -34,7 +34,7 @@ type CreateProductParams struct {
 }
 
 func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) {
-	row := q.db.QueryRowContext(ctx, createProduct,
+	row := q.db.QueryRow(ctx, createProduct,
 		arg.UserID,
 		arg.Name,
 		arg.Amount,
@@ -62,7 +62,7 @@ SELECT _id, _created_at, _updated_at, _name, _amount, _carbohydrate, _protein, _
 `
 
 func (q *Queries) GetAllProducts(ctx context.Context) ([]Product, error) {
-	rows, err := q.db.QueryContext(ctx, getAllProducts)
+	rows, err := q.db.Query(ctx, getAllProducts)
 	if err != nil {
 		return nil, err
 	}
@@ -85,9 +85,6 @@ func (q *Queries) GetAllProducts(ctx context.Context) ([]Product, error) {
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -108,16 +105,16 @@ RETURNING _id, _created_at, _updated_at, _name, _amount, _carbohydrate, _protein
 `
 
 type UpdateProductParams struct {
-	ID           uuid.UUID `json:"id"`
-	Name         string    `json:"name" validate:"required,min=4,max=200"`
-	Amount       int16     `json:"amount" validate:"required,min=1"`
-	Carbohydrate int16     `json:"carbohydrate"`
-	Protein      int16     `json:"protein"`
-	Fat          int16     `json:"fat"`
+	ID           pgtype.UUID `json:"id"`
+	Name         string      `json:"name" validate:"required,min=4,max=200"`
+	Amount       int16       `json:"amount" validate:"required,min=1"`
+	Carbohydrate int16       `json:"carbohydrate"`
+	Protein      int16       `json:"protein"`
+	Fat          int16       `json:"fat"`
 }
 
 func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
-	row := q.db.QueryRowContext(ctx, updateProduct,
+	row := q.db.QueryRow(ctx, updateProduct,
 		arg.ID,
 		arg.Name,
 		arg.Amount,

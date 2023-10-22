@@ -5,14 +5,13 @@ sql:
     schema: "sql/schemas"
     gen:
       go:
+        sql_package: "pgx/v5"
         out: "database"
+        # emit_json_tags: true
+        # json_tags_case_style: "camel"
         overrides:
           - column: '_products._id'
             go_struct_tag: json:"id"
-          - column: '_products._created_at'
-            go_struct_tag: json:"-"
-          - column: '_products._updated_at'
-            go_struct_tag: json:"-"
           - column: '_products._name'
             go_struct_tag: json:"name" validate:"required,min=4,max=200"
           - column: '_products._amount' 
@@ -26,28 +25,28 @@ sql:
 
           - column: '_reports._id'
             go_struct_tag: json:"id"
-          - column: '_products._created_at'
-            go_struct_tag: json:"-"
-          - column: '_products._updated_at'
-            go_struct_tag: json:"-"
           - column: '_reports._date'
             go_struct_tag: json:"date"
+          - column: '_reports._amout_of_entries'
+            go_struct_tag: json:"numberOfEntries"
+          - column: '_reports._carbohydrates_total'
+            go_struct_tag: json:"carbohydratesTotal"
+          - column: '_reports._proteins_total'
+            go_struct_tag: json:"proteinsTotal"
+          - column: '_reports._fats_total'
+            go_struct_tag: json:"fatsTotal"
 
           - column: '_report_entries._id'
             go_struct_tag: json:"id"
-          - column: '_products._created_at'
-            go_struct_tag: json:"-"
-          - column: '_products._updated_at'
-            go_struct_tag: json:"-"
           - column: '_report_entries._product_id'
-            go_struct_tag: json:"product"
+            go_struct_tag: json:"productId" validate:"required,uuid4"
           - column: '_report_entries._report_id'
-            go_struct_tag: json:"report"
+            go_struct_tag: json:"reportId" validate:"uuid4"
           - column: '_report_entries._amount'
-            go_struct_tag: json:"amount"
-          - column: '_report_entries._carbohydrate'
-            go_struct_tag: json:"carbohydrate"
-          - column: '_report_entries._protein'
-            go_struct_tag: json:"protein"
-          - column: '_report_entries._fat'
-            go_struct_tag: json:"fat"
+            go_struct_tag: json:"amount" validate:"required,min=0"
+          - column: '_report_entries._carbohydrates'
+            go_struct_tag: json:"carbohydrates" validate:"required,min=0"
+          - column: '_report_entries._proteins'
+            go_struct_tag: json:"proteins" validate:"required,min=0"
+          - column: '_report_entries._fats'
+            go_struct_tag: json:"fats" validate:"required,min=0"

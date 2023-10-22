@@ -5,52 +5,50 @@
 package database
 
 import (
-	"time"
-
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Product struct {
-	ID           uuid.UUID `json:"id"`
-	CreatedAt    time.Time `json:"-"`
-	UpdatedAt    time.Time `json:"-"`
-	Name         string    `json:"name" validate:"required,min=4,max=200"`
-	Amount       int16     `json:"amount" validate:"required,min=1"`
-	Carbohydrate int16     `json:"carbohydrate"`
-	Protein      int16     `json:"protein"`
-	Fat          int16     `json:"fat"`
-	UserID       uuid.UUID
+	ID           pgtype.UUID `json:"id"`
+	CreatedAt    pgtype.Timestamp
+	UpdatedAt    pgtype.Timestamp
+	Name         string `json:"name" validate:"required,min=4,max=200"`
+	Amount       int16  `json:"amount" validate:"required,min=1"`
+	Carbohydrate int16  `json:"carbohydrate"`
+	Protein      int16  `json:"protein"`
+	Fat          int16  `json:"fat"`
+	UserID       pgtype.UUID
 }
 
 type Report struct {
-	ID             uuid.UUID `json:"id"`
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	Date           time.Time `json:"date"`
-	AmoutOfEntries int16
-	Carbohydrates  int16
-	Proteins       int16
-	Fats           int16
-	UserID         uuid.UUID
+	ID                 pgtype.UUID `json:"id"`
+	CreatedAt          pgtype.Timestamp
+	UpdatedAt          pgtype.Timestamp
+	Date               pgtype.Date `json:"date"`
+	AmoutOfEntries     int16       `json:"numberOfEntries"`
+	CarbohydratesTotal int16       `json:"carbohydratesTotal"`
+	ProteinsTotal      int16       `json:"proteinsTotal"`
+	FatsTotal          int16       `json:"fatsTotal"`
+	UserID             pgtype.UUID
 }
 
 type ReportEntry struct {
-	ID            uuid.UUID `json:"id"`
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	Amount        int16 `json:"amount"`
-	Carbohydrates int16
-	Proteins      int16
-	Fats          int16
-	ProductID     uuid.UUID `json:"product"`
-	ReportID      uuid.UUID `json:"report"`
+	ID            pgtype.UUID `json:"id"`
+	CreatedAt     pgtype.Timestamp
+	UpdatedAt     pgtype.Timestamp
+	Amount        int16       `json:"amount" validate:"required,min=0"`
+	Carbohydrates int16       `json:"carbohydrates" validate:"required,min=0"`
+	Proteins      int16       `json:"proteins" validate:"required,min=0"`
+	Fats          int16       `json:"fats" validate:"required,min=0"`
+	ProductID     pgtype.UUID `json:"productId" validate:"required,uuid4"`
+	ReportID      pgtype.UUID `json:"reportId" validate:"uuid4"`
 }
 
 type User struct {
-	ID          uuid.UUID
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	LastLogin   time.Time
+	ID          pgtype.UUID
+	CreatedAt   pgtype.Timestamp
+	UpdatedAt   pgtype.Timestamp
+	LastLogin   pgtype.Timestamp
 	Active      bool
 	Name        string
 	Email       string
@@ -58,9 +56,6 @@ type User struct {
 }
 
 type Vault struct {
-	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	HashedPw  string
-	UserID    uuid.UUID
+	UserID   pgtype.UUID
+	HashedPw string
 }

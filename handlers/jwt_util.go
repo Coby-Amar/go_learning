@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func createJWTCookie(user_id uuid.UUID, jwtUserSecretKey string) *http.Cookie {
+func createJWTCookie(user_id pgtype.UUID, jwtUserSecretKey string) *http.Cookie {
 	expiresAt := time.Now().Add(time.Minute * 30)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims{
+		UserID: user_id,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ID:        user_id.String(),
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 		},
 	})
@@ -39,7 +39,7 @@ func createJWTCookie(user_id uuid.UUID, jwtUserSecretKey string) *http.Cookie {
 	}
 }
 
-func validateJWT(jwtCookie *http.Cookie, jwtUserSecretKey string) (uuid.UUID, error) {
+func validateJWT(jwtCookie *http.Cookie, jwtUserSecretKey string) (pgtype.UUID, error) {
 	claims := jwtClaims{}
 	parsedToken, err := jwt.ParseWithClaims(jwtCookie.Value, &claims, func(t *jwt.Token) (interface{}, error) {
 		_, ok := t.Method.(*jwt.SigningMethodHMAC)
@@ -55,11 +55,11 @@ func validateJWT(jwtCookie *http.Cookie, jwtUserSecretKey string) (uuid.UUID, er
 	})
 	if err != nil {
 		slog.Error("Failed to Parse jwt", ERROR, err)
-		return uuid.Nil, unauthorizedError
+		return pgtype.UUID{}, unauthorizedError
 	}
 	if !parsedToken.Valid {
 		slog.Error("Invalid token")
-		return uuid.Nil, unauthorizedError
+		return pgtype.UUID{}, unauthorizedError
 	}
-	return uuid.MustParse(claims.ID), nil
+	return claims.UserID, nil
 }
