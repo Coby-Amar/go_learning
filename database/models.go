@@ -9,26 +9,26 @@ import (
 )
 
 type Product struct {
-	ID           pgtype.UUID `json:"id"`
-	CreatedAt    pgtype.Timestamp
-	UpdatedAt    pgtype.Timestamp
-	Name         string `json:"name" validate:"required,min=4,max=200"`
-	Amount       int16  `json:"amount" validate:"required,min=1"`
-	Carbohydrate int16  `json:"carbohydrate"`
-	Protein      int16  `json:"protein"`
-	Fat          int16  `json:"fat"`
-	UserID       pgtype.UUID
+	ID           pgtype.UUID      `json:"id"`
+	CreatedAt    pgtype.Timestamp `json:"-"`
+	UpdatedAt    pgtype.Timestamp `json:"-"`
+	Name         string           `json:"name" validate:"required,min=4,max=200"`
+	Amount       int16            `json:"amount" validate:"required,min=1"`
+	Carbohydrate int16            `json:"carbohydrate"`
+	Protein      int16            `json:"protein"`
+	Fat          int16            `json:"fat"`
+	UserID       pgtype.UUID      `json:"-"`
 }
 
 type Report struct {
 	ID                 pgtype.UUID `json:"id"`
 	CreatedAt          pgtype.Timestamp
 	UpdatedAt          pgtype.Timestamp
-	Date               pgtype.Date `json:"date"`
-	AmoutOfEntries     int16       `json:"numberOfEntries"`
-	CarbohydratesTotal int16       `json:"carbohydratesTotal"`
-	ProteinsTotal      int16       `json:"proteinsTotal"`
-	FatsTotal          int16       `json:"fatsTotal"`
+	Date               pgtype.Date    `json:"date"`
+	AmoutOfEntries     int16          `json:"numberOfEntries"`
+	CarbohydratesTotal pgtype.Numeric `json:"carbohydratesTotal"`
+	ProteinsTotal      pgtype.Numeric `json:"proteinsTotal"`
+	FatsTotal          pgtype.Numeric `json:"fatsTotal"`
 	UserID             pgtype.UUID
 }
 
@@ -36,12 +36,12 @@ type ReportEntry struct {
 	ID            pgtype.UUID `json:"id"`
 	CreatedAt     pgtype.Timestamp
 	UpdatedAt     pgtype.Timestamp
-	Amount        int16       `json:"amount" validate:"required,min=0"`
-	Carbohydrates int16       `json:"carbohydrates" validate:"required,min=0"`
-	Proteins      int16       `json:"proteins" validate:"required,min=0"`
-	Fats          int16       `json:"fats" validate:"required,min=0"`
-	ProductID     pgtype.UUID `json:"productId" validate:"required,uuid4"`
-	ReportID      pgtype.UUID `json:"reportId" validate:"uuid4"`
+	Amount        int16          `json:"amount" validate:"required,min=0"`
+	Carbohydrates pgtype.Numeric `json:"carbohydrates" validate:"required,min=0"`
+	Proteins      pgtype.Numeric `json:"proteins" validate:"required,min=0"`
+	Fats          pgtype.Numeric `json:"fats" validate:"required,min=0"`
+	ProductID     pgtype.UUID    `json:"productId" validate:"required,uuid4"`
+	ReportID      pgtype.UUID    `json:"reportId" validate:"uuid4"`
 }
 
 type User struct {
@@ -49,7 +49,6 @@ type User struct {
 	CreatedAt   pgtype.Timestamp
 	UpdatedAt   pgtype.Timestamp
 	LastLogin   pgtype.Timestamp
-	Active      bool
 	Name        string
 	Email       string
 	PhoneNumber string
@@ -58,4 +57,5 @@ type User struct {
 type Vault struct {
 	UserID   pgtype.UUID
 	HashedPw string
+	Active   bool
 }

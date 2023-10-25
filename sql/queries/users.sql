@@ -1,3 +1,21 @@
+-- name: GetUserByEmail :one
+SELECT 
+    _u.*, 
+    _v._hashed_pw AS _password, 
+    _v._active AS _active 
+FROM _users AS _u
+JOIN _vault AS _v ON _v._user_id = _u._id 
+WHERE _u._email = $1;
+
+-- name: GetUserByID :one
+SELECT 
+    _u.*, 
+    _v._hashed_pw AS _password, 
+    _v._active AS _active 
+FROM _users AS _u
+JOIN _vault AS _v ON _v._user_id = _u._id 
+WHERE _u._id = $1;
+
 -- name: CreateUser :one
 INSERT INTO _users(
     _name,
@@ -28,19 +46,10 @@ RETURNING *;
 -- name: UpdateUserVaultByID :one
 UPDATE _vault
 SET
-    _hashed_pw = $2
+    _hashed_pw = $2,
+    _active = $3
 WHERE _vault._user_id = $1
 RETURNING *;
-
--- name: GetUserByEmail :one
-SELECT _u.*, _v._hashed_pw AS _password FROM _users AS _u
-JOIN _vault AS _v ON _v._user_id = _u._id 
-WHERE _u._email = $1;
-
--- name: GetUserByID :one
-SELECT u.*, v._hashed_pw AS _password FROM _users AS u
-JOIN _vault AS v ON v._user_id = u._id 
-WHERE u._id = $1;
 
 -- name: DeleteUser :exec
 DELETE FROM _users

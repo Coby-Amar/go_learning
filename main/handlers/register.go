@@ -9,8 +9,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func HandleRegister(cwrar *utils.ConfigWithRequestAndResponse, params *RegistrationJson) {
-	hased, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcrypt.MinCost)
+func HandleRegister(cwrar *utils.ConfigWithRequestAndResponse, params utils.RegistrationJson) {
+	hased, err := bcrypt.GenerateFromPassword([]byte(params.Password), 15)
 	if err != nil {
 		slog.Error("Failed to GenerateFromPassword", utils.ERROR, err)
 		utils.RespondWithBadRequest(cwrar.W)

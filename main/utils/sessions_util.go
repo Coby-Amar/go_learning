@@ -26,7 +26,7 @@ func CreateUserSession(cwrar *ConfigWithRequestAndResponse, userId pgtype.UUID) 
 		Path:     "/",
 		SameSite: http.SameSiteStrictMode,
 		Secure:   secure,
-		MaxAge:   time.Now().Add(time.Second * 10).Second(),
+		MaxAge:   int(time.Now().Add(time.Minute * 20).Unix()),
 	}
 	sessionParams := SessionParameters{
 		UserID:            userId,

@@ -12,7 +12,7 @@ import (
 )
 
 func CreateJWTCookie(user_id pgtype.UUID, jwtUserSecretKey string) *http.Cookie {
-	expiresAt := time.Now().Add(time.Minute * 30)
+	expiresAt := time.Now().Add(5 * time.Hour * 24)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims{
 		UserID: user_id,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -34,7 +34,7 @@ func CreateJWTCookie(user_id pgtype.UUID, jwtUserSecretKey string) *http.Cookie 
 		Value:    token,
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
-		MaxAge:   expiresAt.Second(),
+		MaxAge:   int(expiresAt.Unix()),
 		Secure:   secure,
 	}
 }

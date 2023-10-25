@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func HandleLogin(cwrar *utils.ConfigWithRequestAndResponse, params *LoginJson) {
+func HandleLogin(cwrar *utils.ConfigWithRequestAndResponse, params utils.LoginJson) {
 	user, err := cwrar.Config.DB.GetUserByEmail(cwrar.R.Context(), params.Username)
 	if err != nil {
 		utils.RespondWithMessage(cwrar.W, http.StatusBadRequest, utils.BAD_REQUEST_DATA)

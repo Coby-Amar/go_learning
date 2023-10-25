@@ -12,12 +12,22 @@ import (
 )
 
 type CreateReportEntriesParams struct {
-	ProductID     pgtype.UUID `json:"productId" validate:"required,uuid4"`
-	ReportID      pgtype.UUID `json:"reportId" validate:"uuid4"`
-	Amount        int16       `json:"amount" validate:"required,min=0"`
-	Carbohydrates int16       `json:"carbohydrates" validate:"required,min=0"`
-	Proteins      int16       `json:"proteins" validate:"required,min=0"`
-	Fats          int16       `json:"fats" validate:"required,min=0"`
+	ProductID     pgtype.UUID    `json:"productId" validate:"required,uuid4"`
+	ReportID      pgtype.UUID    `json:"reportId" validate:"uuid4"`
+	Amount        int16          `json:"amount" validate:"required,min=0"`
+	Carbohydrates pgtype.Numeric `json:"carbohydrates" validate:"required,min=0"`
+	Proteins      pgtype.Numeric `json:"proteins" validate:"required,min=0"`
+	Fats          pgtype.Numeric `json:"fats" validate:"required,min=0"`
+}
+
+const deleteReportEntry = `-- name: DeleteReportEntry :exec
+DELETE FROM _report_entries
+WHERE _report_entries._id = $1
+`
+
+func (q *Queries) DeleteReportEntry(ctx context.Context, ID pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteReportEntry, ID)
+	return err
 }
 
 const getReportEntries = `-- name: GetReportEntries :many
@@ -31,13 +41,13 @@ type GetReportEntriesRow struct {
 	ID            pgtype.UUID `json:"id"`
 	CreatedAt     pgtype.Timestamp
 	UpdatedAt     pgtype.Timestamp
-	Amount        int16       `json:"amount" validate:"required,min=0"`
-	Carbohydrates int16       `json:"carbohydrates" validate:"required,min=0"`
-	Proteins      int16       `json:"proteins" validate:"required,min=0"`
-	Fats          int16       `json:"fats" validate:"required,min=0"`
-	ProductID     pgtype.UUID `json:"productId" validate:"required,uuid4"`
-	ReportID      pgtype.UUID `json:"reportId" validate:"uuid4"`
-	Name          string      `json:"name" validate:"required,min=4,max=200"`
+	Amount        int16          `json:"amount" validate:"required,min=0"`
+	Carbohydrates pgtype.Numeric `json:"carbohydrates" validate:"required,min=0"`
+	Proteins      pgtype.Numeric `json:"proteins" validate:"required,min=0"`
+	Fats          pgtype.Numeric `json:"fats" validate:"required,min=0"`
+	ProductID     pgtype.UUID    `json:"productId" validate:"required,uuid4"`
+	ReportID      pgtype.UUID    `json:"reportId" validate:"uuid4"`
+	Name          string         `json:"name" validate:"required,min=4,max=200"`
 }
 
 func (q *Queries) GetReportEntries(ctx context.Context, ID pgtype.UUID) ([]GetReportEntriesRow, error) {
@@ -84,11 +94,11 @@ RETURNING _id, _created_at, _updated_at, _amount, _carbohydrates, _proteins, _fa
 `
 
 type UpdateReportEntryParams struct {
-	ID            pgtype.UUID `json:"id"`
-	Amount        int16       `json:"amount" validate:"required,min=0"`
-	Carbohydrates int16       `json:"carbohydrates" validate:"required,min=0"`
-	Proteins      int16       `json:"proteins" validate:"required,min=0"`
-	Fats          int16       `json:"fats" validate:"required,min=0"`
+	ID            pgtype.UUID    `json:"id"`
+	Amount        int16          `json:"amount" validate:"required,min=0"`
+	Carbohydrates pgtype.Numeric `json:"carbohydrates" validate:"required,min=0"`
+	Proteins      pgtype.Numeric `json:"proteins" validate:"required,min=0"`
+	Fats          pgtype.Numeric `json:"fats" validate:"required,min=0"`
 }
 
 func (q *Queries) UpdateReportEntry(ctx context.Context, arg UpdateReportEntryParams) (ReportEntry, error) {

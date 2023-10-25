@@ -25,12 +25,12 @@ RETURNING _id, _created_at, _updated_at, _name, _amount, _carbohydrate, _protein
 `
 
 type CreateProductParams struct {
-	UserID       pgtype.UUID
-	Name         string `json:"name" validate:"required,min=4,max=200"`
-	Amount       int16  `json:"amount" validate:"required,min=1"`
-	Carbohydrate int16  `json:"carbohydrate"`
-	Protein      int16  `json:"protein"`
-	Fat          int16  `json:"fat"`
+	UserID       pgtype.UUID `json:"-"`
+	Name         string      `json:"name" validate:"required,min=4,max=200"`
+	Amount       int16       `json:"amount" validate:"required,min=1"`
+	Carbohydrate int16       `json:"carbohydrate"`
+	Protein      int16       `json:"protein"`
+	Fat          int16       `json:"fat"`
 }
 
 func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) {
@@ -55,6 +55,16 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (P
 		&i.UserID,
 	)
 	return i, err
+}
+
+const deleteProduct = `-- name: DeleteProduct :exec
+DELETE FROM _products
+WHERE _products._id = $1
+`
+
+func (q *Queries) DeleteProduct(ctx context.Context, ID pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteProduct, ID)
+	return err
 }
 
 const getAllProducts = `-- name: GetAllProducts :many

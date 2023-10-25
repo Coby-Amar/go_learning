@@ -10,9 +10,9 @@ import (
 	"github.com/go-playground/validator"
 )
 
-func parseJSONAndValidateFromRequest[T interface{}](body io.ReadCloser) (*T, error) {
+func parseJSONAndValidateFromRequest[T interface{}](body io.ReadCloser) (T, error) {
 	paramsContainer := jsonParams[T]{}
-	decodeErr := json.NewDecoder(body).Decode(paramsContainer.params)
+	decodeErr := json.NewDecoder(body).Decode(&paramsContainer.params)
 	if decodeErr != nil {
 		slog.Error("Failed to decode", utils.ERROR, decodeErr)
 		return paramsContainer.params, errors.New("couldnt decode json")

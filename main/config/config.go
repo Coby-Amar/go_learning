@@ -13,7 +13,6 @@ import (
 )
 
 func Setup() *utils.ApiConfig {
-
 	connection, err := pgx.Connect(context.Background(), os.Getenv(DATABASE_URL))
 	if err != nil {
 		slog.Error("Failed to connect to database", utils.ERROR, err)

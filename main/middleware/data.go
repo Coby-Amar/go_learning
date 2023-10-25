@@ -5,7 +5,7 @@ import (
 )
 
 type configHandler func(*utils.ConfigWithRequestAndResponse)
-type jsonHandler[T interface{}] func(*utils.ConfigWithRequestAndResponse, *T)
+type jsonHandler[T interface{}] func(*utils.ConfigWithRequestAndResponse, T)
 type jsonParams[T interface{}] struct {
-	params *T
+	params T
 }

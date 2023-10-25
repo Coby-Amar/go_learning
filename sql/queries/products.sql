@@ -1,3 +1,6 @@
+-- name: GetAllProducts :many
+SELECT * FROM _products;
+
 -- name: CreateProduct :one
 INSERT INTO _products(
     _user_id,
@@ -22,5 +25,6 @@ SET
 WHERE _products._id = $1
 RETURNING *;
 
--- name: GetAllProducts :many
-SELECT * FROM _products;
+-- name: DeleteProduct :exec
+DELETE FROM _products
+WHERE _products._id = $1;

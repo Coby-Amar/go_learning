@@ -1,3 +1,9 @@
+-- name: GetReportEntries :many
+SELECT _report_entries.*, _products._name FROM _report_entries 
+JOIN _reports ON _reports._id =_report_entries._report_id
+JOIN _products ON _products._id =_report_entries._product_id
+WHERE _reports._id = $1;
+
 -- name: CreateReportEntries :copyfrom
 INSERT INTO _report_entries(
     _product_id,
@@ -20,8 +26,6 @@ SET
 WHERE _report_entries._id = $1
 RETURNING *;
 
--- name: GetReportEntries :many
-SELECT _report_entries.*, _products._name FROM _report_entries 
-JOIN _reports ON _reports._id =_report_entries._report_id
-JOIN _products ON _products._id =_report_entries._product_id
-WHERE _reports._id = $1;
+-- name: DeleteReportEntry :exec
+DELETE FROM _report_entries
+WHERE _report_entries._id = $1;

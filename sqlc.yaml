@@ -12,6 +12,10 @@ sql:
         overrides:
           - column: '_products._id'
             go_struct_tag: json:"id"
+          - column: '_products._created_at'
+            go_struct_tag: json:"-"
+          - column: '_products._updated_at'
+            go_struct_tag: json:"-"
           - column: '_products._name'
             go_struct_tag: json:"name" validate:"required,min=4,max=200"
           - column: '_products._amount' 
@@ -22,6 +26,8 @@ sql:
             go_struct_tag: json:"protein"
           - column: '_products._fat'
             go_struct_tag: json:"fat"
+          - column: '_products._user_id'
+            go_struct_tag: json:"-"
 
           - column: '_reports._id'
             go_struct_tag: json:"id"
