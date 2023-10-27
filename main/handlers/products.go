@@ -11,9 +11,10 @@ import (
 )
 
 func HandleGetProducts(cwrar *utils.ConfigWithRequestAndResponse) {
-	products, err := cwrar.Config.DB.GetAllProducts(cwrar.R.Context())
+	slog.Error("HandleGetProducts")
+	products, err := cwrar.Config.Queries.GetAllProducts(cwrar.R.Context())
 	if err != nil {
-		slog.Error("DB error on GetAllProducts request", utils.ERROR, err)
+		slog.Error("GetAllProducts", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
@@ -21,15 +22,10 @@ func HandleGetProducts(cwrar *utils.ConfigWithRequestAndResponse) {
 }
 
 func HandleCreateProduct(cwrar *utils.ConfigWithRequestAndResponse, params database.CreateProductParams) {
-	sessionParams := utils.GetSessionParams(cwrar)
-	if sessionParams == nil {
-		utils.RespondWithInternalServerError(cwrar.W)
-		return
-	}
-	params.UserID = sessionParams.UserID
+	slog.Error("HandleCreateProduct")
 
-	product, err := cwrar.Config.DB.CreateProduct(cwrar.R.Context(), params)
-	slog.Error("CreateProduct params", "Params", params)
+	params.UserID = cwrar.Sparams.UserID
+	product, err := cwrar.Config.Queries.CreateProduct(cwrar.R.Context(), params)
 	if err != nil {
 		slog.Error("CreateProduct", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
@@ -39,6 +35,7 @@ func HandleCreateProduct(cwrar *utils.ConfigWithRequestAndResponse, params datab
 }
 
 func HandleUpdateProduct(cwrar *utils.ConfigWithRequestAndResponse, params database.UpdateProductParams) {
+	slog.Error("HandleUpdateProduct")
 	productId := utils.GetIdFromURLParam(cwrar.R, utils.PRODUCT_ID)
 	if productId == uuid.Nil {
 		utils.RespondWithBadRequest(cwrar.W)
@@ -47,7 +44,7 @@ func HandleUpdateProduct(cwrar *utils.ConfigWithRequestAndResponse, params datab
 	params.ID = pgtype.UUID{
 		Bytes: productId,
 	}
-	product, err := cwrar.Config.DB.UpdateProduct(cwrar.R.Context(), params)
+	product, err := cwrar.Config.Queries.UpdateProduct(cwrar.R.Context(), params)
 	if err != nil {
 		slog.Error("UpdateProduct", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
@@ -57,17 +54,18 @@ func HandleUpdateProduct(cwrar *utils.ConfigWithRequestAndResponse, params datab
 }
 
 func HandleDeleteProduct(cwrar *utils.ConfigWithRequestAndResponse) {
+	slog.Error("HandleDeleteProduct")
 	productId := utils.GetIdFromURLParam(cwrar.R, utils.PRODUCT_ID)
 	if productId == uuid.Nil {
 		utils.RespondWithBadRequest(cwrar.W)
 		return
 	}
-	delteErr := cwrar.Config.DB.DeleteProduct(cwrar.R.Context(), pgtype.UUID{
+	delteErr := cwrar.Config.Queries.DeleteProduct(cwrar.R.Context(), pgtype.UUID{
 		Bytes: productId,
 		Valid: true,
 	})
 	if delteErr != nil {
-		slog.Error("HandleDeleteProduct DeleteProduct", utils.ERROR, delteErr)
+		slog.Error("DeleteProduct", utils.ERROR, delteErr)
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}

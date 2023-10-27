@@ -11,14 +11,16 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func CreateUserSession(cwrar *ConfigWithRequestAndResponse, userId pgtype.UUID) bool {
-	session, err := cwrar.Config.STORE.Get(cwrar.R, SESSION)
+func CreateUserSession(store *sessions.CookieStore, w http.ResponseWriter, r *http.Request, userId pgtype.UUID) bool {
+	slog.Info("CreateUserSession")
+	session, err := store.Get(r, SESSION)
 	if err != nil {
-		slog.Error("Error getting session", ERROR, err)
+		slog.Error("Store.Get", ERROR, err)
 		return false
 	}
 	secure, err := strconv.ParseBool(os.Getenv(PRODUCTION))
 	if err != nil {
+		slog.Error("ParseBool", ERROR, err)
 		secure = true
 	}
 	session.Options = &sessions.Options{
@@ -36,24 +38,24 @@ func CreateUserSession(cwrar *ConfigWithRequestAndResponse, userId pgtype.UUID) 
 		RequestsCount:     0,
 	}
 	session.Values[SESSION_PARAMETERS] = &sessionParams
-	if err := session.Save(cwrar.R, cwrar.W); err != nil {
-		slog.Error("Saved session fail", ERROR, err)
+	if err := session.Save(r, w); err != nil {
+		slog.Error("session.Save", ERROR, err)
 		return false
 	}
-	slog.Info("Created and saved session", SESSION_PARAMETERS, sessionParams)
 	return true
 }
 
-func GetSessionParams(cwrar *ConfigWithRequestAndResponse) *SessionParameters {
-	session, err := cwrar.Config.STORE.Get(cwrar.R, SESSION)
+func GetSessionParams(store *sessions.CookieStore, r *http.Request) *SessionParameters {
+	slog.Info("GetSessionParams")
+	session, err := store.Get(r, SESSION)
 	if err != nil {
-		slog.Error("getSessionParams failed", ERROR, err)
+		slog.Error("Store.Get", ERROR, err)
 		return nil
 	}
 	val := session.Values[SESSION_PARAMETERS]
 	params, ok := val.(*SessionParameters)
 	if !ok {
-		slog.Error("getSessionParams failed to type-assert params", ERROR, params)
+		slog.Error("type-assert", ERROR, params)
 		return nil
 	}
 	return params

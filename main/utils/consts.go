@@ -12,8 +12,6 @@ const (
 	JWT_COOKIE                = "jwt"
 	TOKEN                     = "token"
 	PRODUCTION                = "PROD"
-	BAD_REQUEST               = "Malformed request"
-	BAD_REQUEST_DATA          = "Username/password don't match"
 	PRODUCT_ID                = "productId"
 	REPORT_ID                 = "reportId"
 )

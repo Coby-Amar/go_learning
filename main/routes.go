@@ -21,6 +21,8 @@ func setupRouter(config *utils.ApiConfig) *chi.Mux {
 func v1Router(router chi.Router, config *utils.ApiConfig) {
 	router.Use(middleware.AuthenticationMiddleware(config))
 
+	router.Get("/user", middleware.ConfigInjectorMiddleware(config, handlers.HandleGetUser))
+
 	router.Get("/products", middleware.ConfigInjectorMiddleware(config, handlers.HandleGetProducts))
 	router.Delete("/products/{productId}", middleware.ConfigInjectorMiddleware(config, handlers.HandleDeleteProduct))
 	router.Post("/products",

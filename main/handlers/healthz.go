@@ -1,13 +1,15 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/coby-amar/go_learning/main/utils"
 )
 
 func HandleHealthZ(cwrar *utils.ConfigWithRequestAndResponse) {
-	if session, err := cwrar.Config.STORE.Get(cwrar.R, utils.SESSION); err == nil {
+	slog.Info("HandleHealthZ")
+	if session, err := cwrar.Config.Store.Get(cwrar.R, utils.SESSION); err == nil {
 		if _, ok := session.Values[utils.SESSION_PARAMETERS]; ok {
 			utils.RespondWithMessage(cwrar.W, http.StatusOK, "in session")
 			return

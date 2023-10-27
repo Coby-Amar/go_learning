@@ -7,9 +7,57 @@ sql:
       go:
         sql_package: "pgx/v5"
         out: "database"
-        # emit_json_tags: true
-        # json_tags_case_style: "camel"
         overrides:
+          - column: '_users._id'
+            go_struct_tag: json:"-"
+          - column: '_users._created_at'
+            go_struct_tag: json:"-"
+          - column: '_users._updated_at'
+            go_struct_tag: json:"-"
+          - column: '_users._email'
+            go_struct_tag: json:"-"
+          - column: '_users._last_login'
+            go_struct_tag: json:"-"
+          - column: '_users._name'
+            go_struct_tag: json:"name" validate:"required,min=3"
+          - column: '_users._phone_number'
+            go_struct_tag: json:"phoneNumber" validate:"required"
+
+          - column: '_vault._user_id'
+            go_struct_tag: json:"-"
+          - column: '_vault._hashed_pw'
+            go_struct_tag: json:"-"
+          - column: '_vault._active'
+            go_struct_tag: json:"-"
+
+          - column: '_daily_limit._user_id'
+            go_struct_tag: json:"-"
+          - column: '_daily_limit._carbohydrate'
+            go_struct_tag: json:"carbohydrate" validate:"required,min=1"
+          - column: '_daily_limit._protein'
+            go_struct_tag: json:"protein" validate:"required,min=1"
+          - column: '_daily_limit._fat'
+            go_struct_tag: json:"fat" validate:"required,min=1"
+
+          - column: '_reports._id'
+            go_struct_tag: json:"id"
+          - column: '_products._created_at'
+            go_struct_tag: json:"-"
+          - column: '_products._updated_at'
+            go_struct_tag: json:"-"
+          - column: '_reports._date'
+            go_struct_tag: json:"date"
+          - column: '_reports._amout_of_entries'
+            go_struct_tag: json:"numberOfEntries"
+          - column: '_reports._carbohydrates_total'
+            go_struct_tag: json:"carbohydratesTotal"
+          - column: '_reports._proteins_total'
+            go_struct_tag: json:"proteinsTotal"
+          - column: '_reports._fats_total'
+            go_struct_tag: json:"fatsTotal"
+          - column: '_products._user_id'
+            go_struct_tag: json:"-"
+
           - column: '_products._id'
             go_struct_tag: json:"id"
           - column: '_products._created_at'
@@ -31,6 +79,10 @@ sql:
 
           - column: '_reports._id'
             go_struct_tag: json:"id"
+          - column: '_products._created_at'
+            go_struct_tag: json:"-"
+          - column: '_products._updated_at'
+            go_struct_tag: json:"-"
           - column: '_reports._date'
             go_struct_tag: json:"date"
           - column: '_reports._amout_of_entries'
@@ -41,9 +93,15 @@ sql:
             go_struct_tag: json:"proteinsTotal"
           - column: '_reports._fats_total'
             go_struct_tag: json:"fatsTotal"
+          - column: '_products._user_id'
+            go_struct_tag: json:"-"
 
           - column: '_report_entries._id'
             go_struct_tag: json:"id"
+          - column: '_products._created_at'
+            go_struct_tag: json:"-"
+          - column: '_products._updated_at'
+            go_struct_tag: json:"-"
           - column: '_report_entries._product_id'
             go_struct_tag: json:"productId" validate:"required,uuid4"
           - column: '_report_entries._report_id'
@@ -56,3 +114,5 @@ sql:
             go_struct_tag: json:"proteins" validate:"required,min=0"
           - column: '_report_entries._fats'
             go_struct_tag: json:"fats" validate:"required,min=0"
+          - column: '_products._user_id'
+            go_struct_tag: json:"-"

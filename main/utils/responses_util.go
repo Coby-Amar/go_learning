@@ -8,9 +8,10 @@ import (
 )
 
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	slog.Info("RespondWithJSON")
 	data, err := json.Marshal(payload)
 	if err != nil {
-		slog.Error("Failed to marshal JSON response", "payload", payload)
+		slog.Error("Marshal", "payload", payload)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Contact your IT consultant"))
 		return
@@ -39,13 +40,13 @@ func RespondWithInternalServerError(w http.ResponseWriter) {
 }
 
 func RespondWithUnauthorized(w http.ResponseWriter) {
-	RespondWithError(w, http.StatusUnauthorized, UnauthorizedError)
+	RespondWithError(w, http.StatusUnauthorized, ErrorUnauthorized)
 }
 
 func RespondWithForbidden(w http.ResponseWriter) {
-	RespondWithJSON(w, http.StatusForbidden, ForbiddenError)
+	RespondWithError(w, http.StatusForbidden, ErrorForbidden)
 }
 
 func RespondWithBadRequest(w http.ResponseWriter) {
-	RespondWithJSON(w, http.StatusBadRequest, BAD_REQUEST)
+	RespondWithError(w, http.StatusBadRequest, ErrorBadRequest)
 }

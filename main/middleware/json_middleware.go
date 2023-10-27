@@ -11,15 +11,16 @@ import (
 )
 
 func parseJSONAndValidateFromRequest[T interface{}](body io.ReadCloser) (T, error) {
+	slog.Info("parseJSONAndValidateFromRequest")
 	paramsContainer := jsonParams[T]{}
 	decodeErr := json.NewDecoder(body).Decode(&paramsContainer.params)
 	if decodeErr != nil {
-		slog.Error("Failed to decode", utils.ERROR, decodeErr)
+		slog.Error("Decode", utils.ERROR, decodeErr)
 		return paramsContainer.params, errors.New("couldnt decode json")
 	}
 	if validationErr := validator.New().Struct(paramsContainer.params); validationErr != nil {
-		slog.Error("Failed to validate", utils.ERROR, validationErr)
-		return paramsContainer.params, errors.New("couldnt decode json")
+		slog.Error("Validate", utils.ERROR, validationErr)
+		return paramsContainer.params, errors.New("Validation failed")
 	}
 	return paramsContainer.params, nil
 

@@ -12,6 +12,7 @@ import (
 )
 
 func CreateJWTCookie(user_id pgtype.UUID, jwtUserSecretKey string) *http.Cookie {
+	slog.Info("CreateJWTCookie")
 	expiresAt := time.Now().Add(5 * time.Hour * 24)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims{
 		UserID: user_id,
@@ -21,11 +22,12 @@ func CreateJWTCookie(user_id pgtype.UUID, jwtUserSecretKey string) *http.Cookie 
 	})
 	token, err := jwtToken.SignedString([]byte(jwtUserSecretKey))
 	if err != nil {
-		slog.Error("Failed to SignedString cookie", ERROR, err)
+		slog.Error("SignedString", ERROR, err)
 		return nil
 	}
 	secure, err := strconv.ParseBool(os.Getenv(PRODUCTION))
 	if err != nil {
+		slog.Error("ParseBool", ERROR, err)
 		secure = true
 	}
 	return &http.Cookie{
@@ -40,26 +42,27 @@ func CreateJWTCookie(user_id pgtype.UUID, jwtUserSecretKey string) *http.Cookie 
 }
 
 func ValidateJWT(jwtCookie *http.Cookie, jwtUserSecretKey string) (pgtype.UUID, error) {
+	slog.Info("ValidateJWT")
 	claims := jwtClaims{}
 	parsedToken, err := jwt.ParseWithClaims(jwtCookie.Value, &claims, func(t *jwt.Token) (interface{}, error) {
 		_, ok := t.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
 			slog.Error("Failed to unsign jwt")
-			return "", UnauthorizedError
+			return "", ErrorUnauthorized
 		}
 		if expTime, err := t.Claims.GetExpirationTime(); err != nil || expTime.Before(time.Now()) {
 			slog.Error("Token expired or GetExpirationTime error", ERROR, err)
-			return "", UnauthorizedError
+			return "", ErrorUnauthorized
 		}
 		return []byte(jwtUserSecretKey), nil
 	})
 	if err != nil {
-		slog.Error("Failed to Parse jwt", ERROR, err)
-		return pgtype.UUID{}, UnauthorizedError
+		slog.Error("ParseWithClaims", ERROR, err)
+		return pgtype.UUID{}, ErrorUnauthorized
 	}
 	if !parsedToken.Valid {
 		slog.Error("Invalid token")
-		return pgtype.UUID{}, UnauthorizedError
+		return pgtype.UUID{}, ErrorUnauthorized
 	}
 	return claims.UserID, nil
 }

@@ -25,8 +25,9 @@ func Setup() *utils.ApiConfig {
 	jwtSK := os.Getenv(utils.JWT_SECRET_KEY)
 
 	return &utils.ApiConfig{
-		DB:             database.New(connection),
-		STORE:          sessions.NewCookieStore([]byte(sAK), []byte(sEK)),
+		Connection:     connection,
+		Queries:        database.New(connection),
+		Store:          sessions.NewCookieStore([]byte(sAK), []byte(sEK)),
 		JWT_SECRET_KEY: jwtSK,
 	}
 

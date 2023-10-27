@@ -11,14 +11,9 @@ import (
 
 func HandleGetReports(cwrar *utils.ConfigWithRequestAndResponse) {
 	slog.Info("HandleGetReports")
-	sessionParams := utils.GetSessionParams(cwrar)
-	if sessionParams == nil {
-		utils.RespondWithInternalServerError(cwrar.W)
-		return
-	}
-	reports, err := cwrar.Config.DB.GetAllUserReports(cwrar.R.Context(), sessionParams.UserID)
+	reports, err := cwrar.Config.Queries.GetAllUserReports(cwrar.R.Context(), cwrar.Sparams.UserID)
 	if err != nil {
-		slog.Error("DB error GetAllReports", utils.ERROR, err)
+		slog.Error("GetAllReports", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
@@ -26,43 +21,52 @@ func HandleGetReports(cwrar *utils.ConfigWithRequestAndResponse) {
 }
 
 func HandleCreateReport(cwrar *utils.ConfigWithRequestAndResponse, params utils.UserCreateReportWithEntries) {
-	sessionParams := utils.GetSessionParams(cwrar)
-	if sessionParams == nil {
+	slog.Info("HandleCreateReport")
+	params.Report.UserID = cwrar.Sparams.UserID
+	params.Report.AmoutOfEntries = int16(len((params.Entries)))
+
+	context := cwrar.R.Context()
+	tx, err := cwrar.Config.Connection.Begin(context)
+	if err != nil {
+		slog.Info("Failed to Begin Transaction", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
-	params.Report.UserID = sessionParams.UserID
-	params.Report.AmoutOfEntries = int16(len((params.Entries)))
-	dbCreatedReport, err := cwrar.Config.DB.CreateReport(cwrar.R.Context(), params.Report)
+	defer tx.Rollback(context)
+
+	queries := cwrar.Config.Queries.WithTx(tx)
+	dbCreatedReport, err := queries.CreateReport(context, params.Report)
 	if err != nil {
-		slog.Error("DB CreateReport", utils.ERROR, err)
+		slog.Error("CreateReport", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
 	for index := range params.Entries {
 		params.Entries[index].ReportID = dbCreatedReport.ID
 	}
-	_, err = cwrar.Config.DB.CreateReportEntries(cwrar.R.Context(), params.Entries)
+	_, err = queries.CreateReportEntries(context, params.Entries)
 	if err != nil {
-		slog.Error("DB CreateReportEntries", utils.ERROR, err)
+		slog.Error("CreateReportEntries", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
+	tx.Commit(context)
 	utils.RespondWithJSON(cwrar.W, http.StatusCreated, dbCreatedReport)
 }
 
 func HandleDeleteReport(cwrar *utils.ConfigWithRequestAndResponse) {
+	slog.Error("HandleDeleteReport")
 	reportId := utils.GetIdFromURLParam(cwrar.R, utils.REPORT_ID)
 	if reportId == uuid.Nil {
 		utils.RespondWithBadRequest(cwrar.W)
 		return
 	}
-	delteErr := cwrar.Config.DB.DeleteReport(cwrar.R.Context(), pgtype.UUID{
+	delteErr := cwrar.Config.Queries.DeleteReport(cwrar.R.Context(), pgtype.UUID{
 		Bytes: reportId,
 		Valid: true,
 	})
 	if delteErr != nil {
-		slog.Error("HandleDeleteReport DeleteReport", utils.ERROR, delteErr)
+		slog.Error("DeleteReport", utils.ERROR, delteErr)
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}

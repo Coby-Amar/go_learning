@@ -18,15 +18,23 @@ CREATE TABLE _vault (
     FOREIGN KEY (_user_id) REFERENCES _users(_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
+CREATE TABLE _daily_limit (
+    _user_id UUID NOT NULL PRIMARY KEY,
+    _carbohydrate SMALLINT NOT NULL CHECK(_carbohydrate > 0), 
+    _protein SMALLINT NOT NULL CHECK(_protein > 0),
+    _fat SMALLINT NOT NULL CHECK(_fat > 0),
+    FOREIGN KEY (_user_id) REFERENCES _users(_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
 CREATE TABLE _products (
     _id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(), 
     _created_at TIMESTAMP NOT NULL DEFAULT NOW(), 
     _updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     _name TEXT NOT NULL UNIQUE CHECK(CHAR_LENGTH(_name) > 0),
     _amount SMALLINT NOT NULL CHECK(_amount > 0),
-    _carbohydrate SMALLINT NOT NULL DEFAULT 0 CHECK(_carbohydrate > -1), 
-    _protein SMALLINT NOT NULL DEFAULT 0 CHECK(_protein > -1),
-    _fat SMALLINT NOT NULL DEFAULT 0 CHECK(_fat > -1),
+    _carbohydrate SMALLINT NOT NULL CHECK(_carbohydrate > -1), 
+    _protein SMALLINT NOT NULL CHECK(_protein > -1),
+    _fat SMALLINT NOT NULL CHECK(_fat > -1),
     _user_id UUID NOT NULL,
     FOREIGN KEY (_user_id) REFERENCES _users(_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
@@ -70,6 +78,8 @@ DROP TABLE _report_entries;
 DROP TABLE _reports;
 
 DROP TABLE _products;
+
+DROP TABLE _daily_limit;
 
 DROP TABLE _vault;
 

@@ -11,43 +11,38 @@ import (
 func AuthenticationMiddleware(config *utils.ApiConfig) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			slog.Info("AuthenticationMiddleware")
 			if strings.Contains(r.URL.Path, "auth") {
 				next.ServeHTTP(w, r)
 				return
 			}
-			configWithRequestAndResponse := &utils.ConfigWithRequestAndResponse{
-				Config: config,
-				W:      w,
-				R:      r,
-			}
-			if sessionParams := utils.GetSessionParams(configWithRequestAndResponse); sessionParams != nil {
+			if sessionParams := utils.GetSessionParams(config.Store, r); sessionParams != nil {
 				next.ServeHTTP(w, r)
 				return
 			}
 			jwtCookie, err := r.Cookie(utils.JWT_COOKIE)
 			if err != nil {
-				slog.Error("Error getting JWT cookie", utils.ERROR, err)
+				slog.Error("Failed getting JWT cookie", utils.ERROR, err)
 				utils.RespondWithUnauthorized(w)
 				return
 			}
 			user_id, validationErr := utils.ValidateJWT(jwtCookie, config.JWT_SECRET_KEY)
 			if validationErr != nil {
-				slog.Error("Error validating JWT cookie", utils.ERROR, validationErr)
 				utils.RespondWithUnauthorized(w)
 				return
 			}
-			user, err := config.DB.GetUserByID(r.Context(), user_id)
+			user, err := config.Queries.GetUserByID(r.Context(), user_id)
 			if err != nil {
-				slog.Error("Error getting userfrom DB", utils.ERROR, err)
+				slog.Error("GetUserByID", utils.ERROR, err)
 				utils.RespondWithUnauthorized(w)
 				return
 			}
-			ok := utils.CreateUserSession(configWithRequestAndResponse, user.ID)
+			ok := utils.CreateUserSession(config.Store, w, r, user.ID)
 			if !ok {
-				slog.Error("Error creating user", utils.ERROR, err)
 				utils.RespondWithUnauthorized(w)
 				return
 			}
+			next.ServeHTTP(w, r)
 		})
 	}
 }

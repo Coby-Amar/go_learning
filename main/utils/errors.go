@@ -2,6 +2,8 @@ package utils
 
 import "errors"
 
-var UnauthorizedError = errors.New("unauthorized")
-
-var ForbiddenError = errors.New("forbidden")
+var (
+	ErrorUnauthorized = errors.New("Unauthorized")
+	ErrorForbidden    = errors.New("Forbidden")
+	ErrorBadRequest   = errors.New("Malformed request")
+)

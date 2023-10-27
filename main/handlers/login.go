@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/coby-amar/go_learning/main/utils"
@@ -8,24 +9,27 @@ import (
 )
 
 func HandleLogin(cwrar *utils.ConfigWithRequestAndResponse, params utils.LoginJson) {
-	user, err := cwrar.Config.DB.GetUserByEmail(cwrar.R.Context(), params.Username)
+	slog.Error("HandleLogin")
+	user, err := cwrar.Config.Queries.GetUserByEmail(cwrar.R.Context(), params.Username)
 	if err != nil {
-		utils.RespondWithMessage(cwrar.W, http.StatusBadRequest, utils.BAD_REQUEST_DATA)
+		slog.Error("GetUserByEmail", utils.ERROR, err)
+		utils.RespondWithBadRequest(cwrar.W)
 		return
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(params.Password))
 	if err != nil {
-		utils.RespondWithMessage(cwrar.W, http.StatusBadRequest, utils.BAD_REQUEST_DATA)
+		slog.Error("CompareHashAndPassword", utils.ERROR, err)
+		utils.RespondWithMessage(cwrar.W, http.StatusBadRequest, "Username/password don't match")
 		return
 	}
 	cookie := utils.CreateJWTCookie(user.ID, cwrar.Config.JWT_SECRET_KEY)
 	if cookie == nil {
-		utils.RespondWithJSON(cwrar.W, http.StatusInternalServerError, utils.SOMETHING_WENT_WRONG)
+		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
-	ok := utils.CreateUserSession(cwrar, user.ID)
+	ok := utils.CreateUserSession(cwrar.Config.Store, cwrar.W, cwrar.R, user.ID)
 	if !ok {
-		utils.RespondWithJSON(cwrar.W, http.StatusInternalServerError, utils.SOMETHING_WENT_WRONG)
+		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
 	http.SetCookie(cwrar.W, cookie)

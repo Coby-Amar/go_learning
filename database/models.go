@@ -8,6 +8,13 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type DailyLimit struct {
+	UserID       pgtype.UUID `json:"-"`
+	Carbohydrate int16       `json:"carbohydrate" validate:"required,min=1"`
+	Protein      int16       `json:"protein" validate:"required,min=1"`
+	Fat          int16       `json:"fat" validate:"required,min=1"`
+}
+
 type Product struct {
 	ID           pgtype.UUID      `json:"id"`
 	CreatedAt    pgtype.Timestamp `json:"-"`
@@ -45,17 +52,17 @@ type ReportEntry struct {
 }
 
 type User struct {
-	ID          pgtype.UUID
-	CreatedAt   pgtype.Timestamp
-	UpdatedAt   pgtype.Timestamp
-	LastLogin   pgtype.Timestamp
-	Name        string
-	Email       string
-	PhoneNumber string
+	ID          pgtype.UUID      `json:"-"`
+	CreatedAt   pgtype.Timestamp `json:"-"`
+	UpdatedAt   pgtype.Timestamp `json:"-"`
+	LastLogin   pgtype.Timestamp `json:"-"`
+	Name        string           `json:"name" validate:"required,min=3"`
+	Email       string           `json:"-"`
+	PhoneNumber string           `json:"phoneNumber" validate:"required"`
 }
 
 type Vault struct {
-	UserID   pgtype.UUID
-	HashedPw string
-	Active   bool
+	UserID   pgtype.UUID `json:"-"`
+	HashedPw string      `json:"-"`
+	Active   bool        `json:"-"`
 }

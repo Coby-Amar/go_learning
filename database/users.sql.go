@@ -11,6 +11,41 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createDailyLimits = `-- name: CreateDailyLimits :one
+INSERT INTO _daily_limit(
+    _user_id,
+    _carbohydrate,
+    _protein,
+    _fat
+)
+VALUES ($1,$2,$3,$4)
+RETURNING _user_id, _carbohydrate, _protein, _fat
+`
+
+type CreateDailyLimitsParams struct {
+	UserID       pgtype.UUID `json:"-"`
+	Carbohydrate int16       `json:"carbohydrate" validate:"required,min=1"`
+	Protein      int16       `json:"protein" validate:"required,min=1"`
+	Fat          int16       `json:"fat" validate:"required,min=1"`
+}
+
+func (q *Queries) CreateDailyLimits(ctx context.Context, arg CreateDailyLimitsParams) (DailyLimit, error) {
+	row := q.db.QueryRow(ctx, createDailyLimits,
+		arg.UserID,
+		arg.Carbohydrate,
+		arg.Protein,
+		arg.Fat,
+	)
+	var i DailyLimit
+	err := row.Scan(
+		&i.UserID,
+		&i.Carbohydrate,
+		&i.Protein,
+		&i.Fat,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO _users(
     _name,
@@ -22,9 +57,9 @@ RETURNING _id, _created_at, _updated_at, _last_login, _name, _email, _phone_numb
 `
 
 type CreateUserParams struct {
-	Name        string
-	Email       string
-	PhoneNumber string
+	Name        string `json:"name" validate:"required,min=3"`
+	Email       string `json:"-"`
+	PhoneNumber string `json:"phoneNumber" validate:"required"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -52,8 +87,8 @@ RETURNING _user_id, _hashed_pw, _active
 `
 
 type CreateUserVaultParams struct {
-	UserID   pgtype.UUID
-	HashedPw string
+	UserID   pgtype.UUID `json:"-"`
+	HashedPw string      `json:"-"`
 }
 
 func (q *Queries) CreateUserVault(ctx context.Context, arg CreateUserVaultParams) (Vault, error) {
@@ -65,7 +100,7 @@ func (q *Queries) CreateUserVault(ctx context.Context, arg CreateUserVaultParams
 
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM _users
-WHERE _users._id = $1
+WHERE _id = $1
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, ID pgtype.UUID) error {
@@ -77,22 +112,29 @@ const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT 
     _u._id, _u._created_at, _u._updated_at, _u._last_login, _u._name, _u._email, _u._phone_number, 
     _v._hashed_pw AS _password, 
-    _v._active AS _active 
+    _v._active AS _active,
+    _d._carbohydrate AS _carbohydrate,
+    _d._protein AS _protein,
+    _d._fat AS _fat
 FROM _users AS _u
 JOIN _vault AS _v ON _v._user_id = _u._id 
+JOIN _daily_limit AS _d ON _d._user_id = _u._id 
 WHERE _u._email = $1
 `
 
 type GetUserByEmailRow struct {
-	ID          pgtype.UUID
-	CreatedAt   pgtype.Timestamp
-	UpdatedAt   pgtype.Timestamp
-	LastLogin   pgtype.Timestamp
-	Name        string
-	Email       string
-	PhoneNumber string
-	Password    string
-	Active      bool
+	ID           pgtype.UUID      `json:"-"`
+	CreatedAt    pgtype.Timestamp `json:"-"`
+	UpdatedAt    pgtype.Timestamp `json:"-"`
+	LastLogin    pgtype.Timestamp `json:"-"`
+	Name         string           `json:"name" validate:"required,min=3"`
+	Email        string           `json:"-"`
+	PhoneNumber  string           `json:"phoneNumber" validate:"required"`
+	Password     string           `json:"-"`
+	Active       bool             `json:"-"`
+	Carbohydrate int16            `json:"carbohydrate" validate:"required,min=1"`
+	Protein      int16            `json:"protein" validate:"required,min=1"`
+	Fat          int16            `json:"fat" validate:"required,min=1"`
 }
 
 func (q *Queries) GetUserByEmail(ctx context.Context, Email string) (GetUserByEmailRow, error) {
@@ -108,6 +150,9 @@ func (q *Queries) GetUserByEmail(ctx context.Context, Email string) (GetUserByEm
 		&i.PhoneNumber,
 		&i.Password,
 		&i.Active,
+		&i.Carbohydrate,
+		&i.Protein,
+		&i.Fat,
 	)
 	return i, err
 }
@@ -116,22 +161,29 @@ const getUserByID = `-- name: GetUserByID :one
 SELECT 
     _u._id, _u._created_at, _u._updated_at, _u._last_login, _u._name, _u._email, _u._phone_number, 
     _v._hashed_pw AS _password, 
-    _v._active AS _active 
+    _v._active AS _active,
+    _d._carbohydrate AS _carbohydrate,
+    _d._protein AS _protein,
+    _d._fat AS _fat
 FROM _users AS _u
 JOIN _vault AS _v ON _v._user_id = _u._id 
+JOIN _daily_limit AS _d ON _d._user_id = _u._id 
 WHERE _u._id = $1
 `
 
 type GetUserByIDRow struct {
-	ID          pgtype.UUID
-	CreatedAt   pgtype.Timestamp
-	UpdatedAt   pgtype.Timestamp
-	LastLogin   pgtype.Timestamp
-	Name        string
-	Email       string
-	PhoneNumber string
-	Password    string
-	Active      bool
+	ID           pgtype.UUID      `json:"-"`
+	CreatedAt    pgtype.Timestamp `json:"-"`
+	UpdatedAt    pgtype.Timestamp `json:"-"`
+	LastLogin    pgtype.Timestamp `json:"-"`
+	Name         string           `json:"name" validate:"required,min=3"`
+	Email        string           `json:"-"`
+	PhoneNumber  string           `json:"phoneNumber" validate:"required"`
+	Password     string           `json:"-"`
+	Active       bool             `json:"-"`
+	Carbohydrate int16            `json:"carbohydrate" validate:"required,min=1"`
+	Protein      int16            `json:"protein" validate:"required,min=1"`
+	Fat          int16            `json:"fat" validate:"required,min=1"`
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, ID pgtype.UUID) (GetUserByIDRow, error) {
@@ -147,6 +199,43 @@ func (q *Queries) GetUserByID(ctx context.Context, ID pgtype.UUID) (GetUserByIDR
 		&i.PhoneNumber,
 		&i.Password,
 		&i.Active,
+		&i.Carbohydrate,
+		&i.Protein,
+		&i.Fat,
+	)
+	return i, err
+}
+
+const updateDailyLimits = `-- name: UpdateDailyLimits :one
+UPDATE _daily_limit
+SET
+    _carbohydrate = $2,
+    _protein = $3,
+    _fat = $4
+WHERE _user_id = $1
+RETURNING _user_id, _carbohydrate, _protein, _fat
+`
+
+type UpdateDailyLimitsParams struct {
+	UserID       pgtype.UUID `json:"-"`
+	Carbohydrate int16       `json:"carbohydrate" validate:"required,min=1"`
+	Protein      int16       `json:"protein" validate:"required,min=1"`
+	Fat          int16       `json:"fat" validate:"required,min=1"`
+}
+
+func (q *Queries) UpdateDailyLimits(ctx context.Context, arg UpdateDailyLimitsParams) (DailyLimit, error) {
+	row := q.db.QueryRow(ctx, updateDailyLimits,
+		arg.UserID,
+		arg.Carbohydrate,
+		arg.Protein,
+		arg.Fat,
+	)
+	var i DailyLimit
+	err := row.Scan(
+		&i.UserID,
+		&i.Carbohydrate,
+		&i.Protein,
+		&i.Fat,
 	)
 	return i, err
 }
@@ -158,15 +247,15 @@ SET
     _email = $3,
     _phone_number = $4,
     _updated_at = NOW()
-WHERE _users._id = $1
+WHERE _id = $1
 RETURNING _id, _created_at, _updated_at, _last_login, _name, _email, _phone_number
 `
 
 type UpdateUserParams struct {
-	ID          pgtype.UUID
-	Name        string
-	Email       string
-	PhoneNumber string
+	ID          pgtype.UUID `json:"-"`
+	Name        string      `json:"name" validate:"required,min=3"`
+	Email       string      `json:"-"`
+	PhoneNumber string      `json:"phoneNumber" validate:"required"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -194,14 +283,14 @@ UPDATE _vault
 SET
     _hashed_pw = $2,
     _active = $3
-WHERE _vault._user_id = $1
+WHERE _user_id = $1
 RETURNING _user_id, _hashed_pw, _active
 `
 
 type UpdateUserVaultByIDParams struct {
-	UserID   pgtype.UUID
-	HashedPw string
-	Active   bool
+	UserID   pgtype.UUID `json:"-"`
+	HashedPw string      `json:"-"`
+	Active   bool        `json:"-"`
 }
 
 func (q *Queries) UpdateUserVaultByID(ctx context.Context, arg UpdateUserVaultByIDParams) (Vault, error) {
