@@ -67,9 +67,11 @@ func HandleRegister(cwrar *utils.ConfigWithRequestAndResponse, params utils.Regi
 	}
 	tx.Commit(context)
 	http.SetCookie(cwrar.W, cookie)
-	utils.RespondWithJSON(cwrar.W, http.StatusOK, utils.RegistrationJsonResponse{
-		DailyLimit:  dailyLimits,
-		Name:        user.Name,
-		PhoneNumber: user.PhoneNumber,
+	utils.RespondWithJSON(cwrar.W, http.StatusCreated, database.GetUserByIDRow{
+		Name:         user.Name,
+		PhoneNumber:  user.PhoneNumber,
+		Carbohydrate: dailyLimits.Carbohydrate,
+		Protein:      dailyLimits.Protein,
+		Fat:          dailyLimits.Fat,
 	})
 }

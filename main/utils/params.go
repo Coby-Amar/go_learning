@@ -6,15 +6,18 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func GetIdFromURLParam(r *http.Request, paramKey string) uuid.UUID {
+func GetIdFromURLParam(r *http.Request, paramKey string) (pgtype.UUID, error) {
 	slog.Info("GetIdFromURLParam")
 	productId, parseErr := uuid.Parse(chi.URLParam(r, paramKey))
 	if parseErr != nil {
 		slog.Error("Parse", ERROR, parseErr)
-		return uuid.Nil
+		return pgtype.UUID{}, ErrorFailedToParseParam
 	}
-	return productId
-
+	return pgtype.UUID{
+		Bytes: productId,
+		Valid: true,
+	}, nil
 }

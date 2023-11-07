@@ -15,7 +15,7 @@ func parseJSONAndValidateFromRequest[T interface{}](body io.ReadCloser) (T, erro
 	paramsContainer := jsonParams[T]{}
 	decodeErr := json.NewDecoder(body).Decode(&paramsContainer.params)
 	if decodeErr != nil {
-		slog.Error("Decode", utils.ERROR, decodeErr)
+		slog.Error("Decode", utils.ERROR, decodeErr, "body", body)
 		return paramsContainer.params, errors.New("couldnt decode json")
 	}
 	if validationErr := validator.New().Struct(paramsContainer.params); validationErr != nil {

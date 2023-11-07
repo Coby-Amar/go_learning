@@ -25,10 +25,11 @@ func CreateUserSession(store *sessions.CookieStore, w http.ResponseWriter, r *ht
 	}
 	session.Options = &sessions.Options{
 		HttpOnly: true,
+		Domain:   "localhost, localhost:2318",
 		Path:     "/",
-		SameSite: http.SameSiteStrictMode,
-		Secure:   secure,
-		MaxAge:   int(time.Now().Add(time.Minute * 20).Unix()),
+		// SameSite: http.SameSiteStrictMode,
+		Secure: secure,
+		MaxAge: int(time.Now().Add(time.Minute * 20).Unix()),
 	}
 	sessionParams := SessionParameters{
 		UserID:            userId,
@@ -59,4 +60,25 @@ func GetSessionParams(store *sessions.CookieStore, r *http.Request) *SessionPara
 		return nil
 	}
 	return params
+}
+
+func DeleteSessionParams(store *sessions.CookieStore, w http.ResponseWriter, r *http.Request) bool {
+	slog.Info("GetSessionParams")
+	session, err := store.Get(r, SESSION)
+	if err != nil {
+		slog.Error("Store.Get", ERROR, err)
+		return false
+	}
+	session.Options = &sessions.Options{
+		HttpOnly: true,
+		Path:     "/",
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   -1,
+	}
+	session.Values[SESSION_PARAMETERS] = nil
+	if err := session.Save(r, w); err != nil {
+		slog.Error("session.Save", ERROR, err)
+		return false
+	}
+	return true
 }

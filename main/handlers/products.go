@@ -6,13 +6,11 @@ import (
 
 	"github.com/coby-amar/go_learning/database"
 	"github.com/coby-amar/go_learning/main/utils"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func HandleGetProducts(cwrar *utils.ConfigWithRequestAndResponse) {
 	slog.Error("HandleGetProducts")
-	products, err := cwrar.Config.Queries.GetAllProducts(cwrar.R.Context())
+	products, err := cwrar.Config.Queries.GetUserProducts(cwrar.R.Context(), cwrar.Sparams.UserID)
 	if err != nil {
 		slog.Error("GetAllProducts", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
@@ -36,34 +34,23 @@ func HandleCreateProduct(cwrar *utils.ConfigWithRequestAndResponse, params datab
 
 func HandleUpdateProduct(cwrar *utils.ConfigWithRequestAndResponse, params database.UpdateProductParams) {
 	slog.Error("HandleUpdateProduct")
-	productId := utils.GetIdFromURLParam(cwrar.R, utils.PRODUCT_ID)
-	if productId == uuid.Nil {
-		utils.RespondWithBadRequest(cwrar.W)
-		return
-	}
-	params.ID = pgtype.UUID{
-		Bytes: productId,
-	}
-	product, err := cwrar.Config.Queries.UpdateProduct(cwrar.R.Context(), params)
+	err := cwrar.Config.Queries.UpdateProduct(cwrar.R.Context(), params)
 	if err != nil {
 		slog.Error("UpdateProduct", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
-	utils.RespondWithJSON(cwrar.W, http.StatusOK, product)
+	utils.RespondWithJSON(cwrar.W, http.StatusOK, params)
 }
 
 func HandleDeleteProduct(cwrar *utils.ConfigWithRequestAndResponse) {
 	slog.Error("HandleDeleteProduct")
-	productId := utils.GetIdFromURLParam(cwrar.R, utils.PRODUCT_ID)
-	if productId == uuid.Nil {
+	productId, err := utils.GetIdFromURLParam(cwrar.R, utils.PRODUCT_ID)
+	if err != nil {
 		utils.RespondWithBadRequest(cwrar.W)
 		return
 	}
-	delteErr := cwrar.Config.Queries.DeleteProduct(cwrar.R.Context(), pgtype.UUID{
-		Bytes: productId,
-		Valid: true,
-	})
+	delteErr := cwrar.Config.Queries.DeleteProduct(cwrar.R.Context(), productId)
 	if delteErr != nil {
 		slog.Error("DeleteProduct", utils.ERROR, delteErr)
 		utils.RespondWithInternalServerError(cwrar.W)

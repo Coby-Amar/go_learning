@@ -5,13 +5,20 @@ import (
 	"github.com/coby-amar/go_learning/main/handlers"
 	"github.com/coby-amar/go_learning/main/middleware"
 	"github.com/coby-amar/go_learning/main/utils"
+
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 )
 
 func setupRouter(config *utils.ApiConfig) *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(middleware.LoggingMiddleware)
-
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://10.100.102.41:8080", "http://10.100.102.41:8080", "http://localhost:2318"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Content-Type"},
+		AllowCredentials: true,
+	}))
 	router.Route("/api/v1", func(r chi.Router) {
 		v1Router(r, config)
 	})
@@ -31,7 +38,7 @@ func v1Router(router chi.Router, config *utils.ApiConfig) {
 			middleware.ParseJSONAndValidateMiddleware[database.CreateProductParams](handlers.HandleCreateProduct),
 		),
 	)
-	router.Put("/products/{productId}",
+	router.Put("/products",
 		middleware.ConfigInjectorMiddleware(
 			config,
 			middleware.ParseJSONAndValidateMiddleware[database.UpdateProductParams](handlers.HandleUpdateProduct),
@@ -39,7 +46,14 @@ func v1Router(router chi.Router, config *utils.ApiConfig) {
 	)
 
 	router.Get("/reports", middleware.ConfigInjectorMiddleware(config, handlers.HandleGetReports))
+	router.Get("/reports/{reportId}/entries", middleware.ConfigInjectorMiddleware(config, handlers.HandleGetReportEntries))
 	router.Delete("/reports/{reportId}", middleware.ConfigInjectorMiddleware(config, handlers.HandleDeleteReport))
+	router.Put("/reports",
+		middleware.ConfigInjectorMiddleware(
+			config,
+			middleware.ParseJSONAndValidateMiddleware[utils.UserUpdateReportWithEntries](handlers.HandleUpdateReport),
+		),
+	)
 	router.Post("/reports",
 		middleware.ConfigInjectorMiddleware(
 			config,

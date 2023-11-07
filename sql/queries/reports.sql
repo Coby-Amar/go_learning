@@ -1,6 +1,10 @@
 -- name: GetAllUserReports :many
 SELECT * FROM _reports
-WHERE _reports._user_id = $1;
+WHERE _user_id = $1;
+
+-- name: GetReportByID :one
+SELECT * FROM _reports
+WHERE _id = $1;
 
 -- name: CreateReport :one
 INSERT INTO _reports(

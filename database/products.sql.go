@@ -59,7 +59,7 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (P
 
 const deleteProduct = `-- name: DeleteProduct :exec
 DELETE FROM _products
-WHERE _products._id = $1
+WHERE _id = $1
 `
 
 func (q *Queries) DeleteProduct(ctx context.Context, ID pgtype.UUID) error {
@@ -68,7 +68,8 @@ func (q *Queries) DeleteProduct(ctx context.Context, ID pgtype.UUID) error {
 }
 
 const getAllProducts = `-- name: GetAllProducts :many
-SELECT _id, _created_at, _updated_at, _name, _amount, _carbohydrate, _protein, _fat, _user_id FROM _products
+SELECT _id, _created_at, _updated_at, _name, _amount, _carbohydrate, _protein, _fat, _user_id 
+FROM _products
 `
 
 func (q *Queries) GetAllProducts(ctx context.Context) ([]Product, error) {
@@ -101,7 +102,43 @@ func (q *Queries) GetAllProducts(ctx context.Context) ([]Product, error) {
 	return items, nil
 }
 
-const updateProduct = `-- name: UpdateProduct :one
+const getUserProducts = `-- name: GetUserProducts :many
+SELECT _id, _created_at, _updated_at, _name, _amount, _carbohydrate, _protein, _fat, _user_id 
+FROM _products
+WHERE _user_id = $1
+`
+
+func (q *Queries) GetUserProducts(ctx context.Context, UserID pgtype.UUID) ([]Product, error) {
+	rows, err := q.db.Query(ctx, getUserProducts, UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Product
+	for rows.Next() {
+		var i Product
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Name,
+			&i.Amount,
+			&i.Carbohydrate,
+			&i.Protein,
+			&i.Fat,
+			&i.UserID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateProduct = `-- name: UpdateProduct :exec
 UPDATE _products
 SET 
     _name = $2,
@@ -110,8 +147,7 @@ SET
     _protein = $5,
     _fat = $6,
     _updated_at = NOW()
-WHERE _products._id = $1
-RETURNING _id, _created_at, _updated_at, _name, _amount, _carbohydrate, _protein, _fat, _user_id
+WHERE _id = $1
 `
 
 type UpdateProductParams struct {
@@ -123,8 +159,8 @@ type UpdateProductParams struct {
 	Fat          int16       `json:"fat"`
 }
 
-func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
-	row := q.db.QueryRow(ctx, updateProduct,
+func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) error {
+	_, err := q.db.Exec(ctx, updateProduct,
 		arg.ID,
 		arg.Name,
 		arg.Amount,
@@ -132,17 +168,5 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		arg.Protein,
 		arg.Fat,
 	)
-	var i Product
-	err := row.Scan(
-		&i.ID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Name,
-		&i.Amount,
-		&i.Carbohydrate,
-		&i.Protein,
-		&i.Fat,
-		&i.UserID,
-	)
-	return i, err
+	return err
 }

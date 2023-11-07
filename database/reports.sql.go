@@ -30,7 +30,7 @@ type CreateReportParams struct {
 	CarbohydratesTotal pgtype.Numeric `json:"carbohydratesTotal"`
 	ProteinsTotal      pgtype.Numeric `json:"proteinsTotal"`
 	FatsTotal          pgtype.Numeric `json:"fatsTotal"`
-	UserID             pgtype.UUID
+	UserID             pgtype.UUID    `json:"-"`
 }
 
 func (q *Queries) CreateReport(ctx context.Context, arg CreateReportParams) (Report, error) {
@@ -69,7 +69,7 @@ func (q *Queries) DeleteReport(ctx context.Context, ID pgtype.UUID) error {
 
 const getAllUserReports = `-- name: GetAllUserReports :many
 SELECT _id, _created_at, _updated_at, _date, _amout_of_entries, _carbohydrates_total, _proteins_total, _fats_total, _user_id FROM _reports
-WHERE _reports._user_id = $1
+WHERE _user_id = $1
 `
 
 func (q *Queries) GetAllUserReports(ctx context.Context, UserID pgtype.UUID) ([]Report, error) {
@@ -100,6 +100,28 @@ func (q *Queries) GetAllUserReports(ctx context.Context, UserID pgtype.UUID) ([]
 		return nil, err
 	}
 	return items, nil
+}
+
+const getReportByID = `-- name: GetReportByID :one
+SELECT _id, _created_at, _updated_at, _date, _amout_of_entries, _carbohydrates_total, _proteins_total, _fats_total, _user_id FROM _reports
+WHERE _id = $1
+`
+
+func (q *Queries) GetReportByID(ctx context.Context, ID pgtype.UUID) (Report, error) {
+	row := q.db.QueryRow(ctx, getReportByID, ID)
+	var i Report
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Date,
+		&i.AmoutOfEntries,
+		&i.CarbohydratesTotal,
+		&i.ProteinsTotal,
+		&i.FatsTotal,
+		&i.UserID,
+	)
+	return i, err
 }
 
 const updateReport = `-- name: UpdateReport :one

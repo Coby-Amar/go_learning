@@ -28,15 +28,15 @@ type Product struct {
 }
 
 type Report struct {
-	ID                 pgtype.UUID `json:"id"`
-	CreatedAt          pgtype.Timestamp
-	UpdatedAt          pgtype.Timestamp
-	Date               pgtype.Date    `json:"date"`
-	AmoutOfEntries     int16          `json:"numberOfEntries"`
-	CarbohydratesTotal pgtype.Numeric `json:"carbohydratesTotal"`
-	ProteinsTotal      pgtype.Numeric `json:"proteinsTotal"`
-	FatsTotal          pgtype.Numeric `json:"fatsTotal"`
-	UserID             pgtype.UUID
+	ID                 pgtype.UUID      `json:"id"`
+	CreatedAt          pgtype.Timestamp `json:"-"`
+	UpdatedAt          pgtype.Timestamp `json:"-"`
+	Date               pgtype.Date      `json:"date"`
+	AmoutOfEntries     int16            `json:"numberOfEntries"`
+	CarbohydratesTotal pgtype.Numeric   `json:"carbohydratesTotal"`
+	ProteinsTotal      pgtype.Numeric   `json:"proteinsTotal"`
+	FatsTotal          pgtype.Numeric   `json:"fatsTotal"`
+	UserID             pgtype.UUID      `json:"-"`
 }
 
 type ReportEntry struct {

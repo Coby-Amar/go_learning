@@ -22,7 +22,7 @@ sql:
             go_struct_tag: json:"name" validate:"required,min=3"
           - column: '_users._phone_number'
             go_struct_tag: json:"phoneNumber" validate:"required"
-
+            
           - column: '_vault._user_id'
             go_struct_tag: json:"-"
           - column: '_vault._hashed_pw'
@@ -41,9 +41,9 @@ sql:
 
           - column: '_reports._id'
             go_struct_tag: json:"id"
-          - column: '_products._created_at'
+          - column: '_reports._created_at'
             go_struct_tag: json:"-"
-          - column: '_products._updated_at'
+          - column: '_reports._updated_at'
             go_struct_tag: json:"-"
           - column: '_reports._date'
             go_struct_tag: json:"date"
@@ -55,7 +55,7 @@ sql:
             go_struct_tag: json:"proteinsTotal"
           - column: '_reports._fats_total'
             go_struct_tag: json:"fatsTotal"
-          - column: '_products._user_id'
+          - column: '_reports._user_id'
             go_struct_tag: json:"-"
 
           - column: '_products._id'

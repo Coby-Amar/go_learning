@@ -32,12 +32,13 @@ func CreateJWTCookie(user_id pgtype.UUID, jwtUserSecretKey string) *http.Cookie 
 	}
 	return &http.Cookie{
 		Name:     JWT_COOKIE,
+		Domain:   "localhost, localhost:2318",
 		Path:     "/",
 		Value:    token,
 		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-		MaxAge:   int(expiresAt.Unix()),
-		Secure:   secure,
+		// SameSite: http.SameSiteStrictMode,
+		MaxAge: int(expiresAt.Unix()),
+		Secure: secure,
 	}
 }
 
@@ -65,4 +66,15 @@ func ValidateJWT(jwtCookie *http.Cookie, jwtUserSecretKey string) (pgtype.UUID, 
 		return pgtype.UUID{}, ErrorUnauthorized
 	}
 	return claims.UserID, nil
+}
+
+func DeleteJWTCookie() *http.Cookie {
+	return &http.Cookie{
+		Name:     JWT_COOKIE,
+		Path:     "/",
+		Value:    "",
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   -1,
+	}
 }

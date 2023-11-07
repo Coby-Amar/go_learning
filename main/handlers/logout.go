@@ -7,5 +7,8 @@ import (
 )
 
 func HandleLogout(cwrar *utils.ConfigWithRequestAndResponse) {
-	utils.RespondWithJSON(cwrar.W, http.StatusOK, struct{}{})
+	utils.DeleteSessionParams(cwrar.Config.Store, cwrar.W, cwrar.R)
+	jwtCookie := utils.DeleteJWTCookie()
+	http.SetCookie(cwrar.W, jwtCookie)
+	utils.RespondWithMessage(cwrar.W, http.StatusOK, "loggout")
 }

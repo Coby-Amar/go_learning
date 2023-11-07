@@ -61,3 +61,8 @@ type UserCreateReportWithEntries struct {
 	Report  database.CreateReportParams          `json:"report" validate:"required"`
 	Entries []database.CreateReportEntriesParams `json:"entries" validate:"required,min=1,max=20"`
 }
+
+type UserUpdateReportWithEntries struct {
+	Report  database.UpdateReportParams `json:"report" validate:"required"`
+	Entries []database.ReportEntry      `json:"extries" validate:"required,min=1,max=20"`
+}
