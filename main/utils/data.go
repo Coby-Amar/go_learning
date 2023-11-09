@@ -59,10 +59,11 @@ type RegistrationJsonResponse struct {
 
 type UserCreateReportWithEntries struct {
 	Report  database.CreateReportParams          `json:"report" validate:"required"`
-	Entries []database.CreateReportEntriesParams `json:"entries" validate:"required,min=1,max=20"`
+	Entries []database.CreateReportEntriesParams `json:"entriesToCreate" validate:"required,min=1,max=20"`
 }
 
 type UserUpdateReportWithEntries struct {
-	Report  database.UpdateReportParams `json:"report" validate:"required"`
-	Entries []database.ReportEntry      `json:"extries" validate:"required,min=1,max=20"`
+	Report          database.UpdateReportParams          `json:"report" validate:"required"`
+	ExistingEntries []database.UpdateReportEntryParams   `json:"existingEntries" validate:"required,min=1,max=15"`
+	EntriesToCreate []database.CreateReportEntriesParams `json:"entriesToCreate" validate:"required,min=1,max=15"`
 }

@@ -1,13 +1,18 @@
 package handlers
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 
 	"github.com/coby-amar/go_learning/database"
 	"github.com/coby-amar/go_learning/main/utils"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// ---------------------------------------------------------------------------------------------------
+// HandleGetReports
+// ---------------------------------------------------------------------------------------------------
 func HandleGetReports(cwrar *utils.ConfigWithRequestAndResponse) {
 	slog.Info("HandleGetReports")
 	reports, err := cwrar.Config.Queries.GetAllUserReports(cwrar.R.Context(), cwrar.Sparams.UserID)
@@ -19,6 +24,9 @@ func HandleGetReports(cwrar *utils.ConfigWithRequestAndResponse) {
 	utils.RespondWithJSON(cwrar.W, http.StatusOK, reports)
 }
 
+// ---------------------------------------------------------------------------------------------------
+// HandleGetReportEntries
+// ---------------------------------------------------------------------------------------------------
 func HandleGetReportEntries(cwrar *utils.ConfigWithRequestAndResponse) {
 	slog.Info("HandleGetReportEntries")
 	reportId, err := utils.GetIdFromURLParam(cwrar.R, utils.REPORT_ID)
@@ -26,15 +34,32 @@ func HandleGetReportEntries(cwrar *utils.ConfigWithRequestAndResponse) {
 		utils.RespondWithBadRequest(cwrar.W)
 		return
 	}
-	reportEtries, err := cwrar.Config.Queries.GetReportEntries(cwrar.R.Context(), reportId)
+	reportEntries, err := cwrar.Config.Queries.GetReportEntries(cwrar.R.Context(), reportId)
 	if err != nil {
 		slog.Error("GetAllReports", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
-	utils.RespondWithJSON(cwrar.W, http.StatusOK, reportEtries)
+	utils.RespondWithJSON(cwrar.W, http.StatusOK, reportEntries)
 }
 
+// ---------------------------------------------------------------------------------------------------
+// createReportEntries
+// ---------------------------------------------------------------------------------------------------
+func createReportEntries(queries *database.Queries, context context.Context, entries []database.CreateReportEntriesParams, reportId pgtype.UUID) error {
+	for index := range entries {
+		entries[index].ReportID = reportId
+	}
+	_, err := queries.CreateReportEntries(context, entries)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// ---------------------------------------------------------------------------------------------------
+// HandleCreateReport
+// ---------------------------------------------------------------------------------------------------
 func HandleCreateReport(cwrar *utils.ConfigWithRequestAndResponse, params utils.UserCreateReportWithEntries) {
 	slog.Info("HandleCreateReport")
 	params.Report.UserID = cwrar.Sparams.UserID
@@ -56,10 +81,7 @@ func HandleCreateReport(cwrar *utils.ConfigWithRequestAndResponse, params utils.
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
-	for index := range params.Entries {
-		params.Entries[index].ReportID = dbCreatedReport.ID
-	}
-	_, err = queries.CreateReportEntries(context, params.Entries)
+	err = createReportEntries(queries, context, params.Entries, dbCreatedReport.ID)
 	if err != nil {
 		slog.Error("CreateReportEntries", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
@@ -69,9 +91,12 @@ func HandleCreateReport(cwrar *utils.ConfigWithRequestAndResponse, params utils.
 	utils.RespondWithJSON(cwrar.W, http.StatusCreated, dbCreatedReport)
 }
 
+// ---------------------------------------------------------------------------------------------------
+// HandleUpdateReport
+// ---------------------------------------------------------------------------------------------------
 func HandleUpdateReport(cwrar *utils.ConfigWithRequestAndResponse, params utils.UserUpdateReportWithEntries) {
-	slog.Info("HandleUpdateReport")
-	params.Report.AmoutOfEntries = int16(len((params.Entries)))
+	params.Report.AmoutOfEntries = int16(len((params.ExistingEntries)) + len(params.EntriesToCreate))
+
 	context := cwrar.R.Context()
 	tx, err := cwrar.Config.Connection.Begin(context)
 	if err != nil {
@@ -84,38 +109,20 @@ func HandleUpdateReport(cwrar *utils.ConfigWithRequestAndResponse, params utils.
 	queries := cwrar.Config.Queries.WithTx(tx)
 	dbUpdatedReport, updateErr := queries.UpdateReport(context, params.Report)
 	if updateErr != nil {
+
 		slog.Error("UpdateReport", utils.ERROR, updateErr)
 		utils.RespondWithInternalServerError(cwrar.W)
 		return
 	}
-	entriesToCreate := []database.CreateReportEntriesParams{}
-	for _, entry := range params.Entries {
-		if entry.ID.Valid {
-			_, err = queries.UpdateReportEntry(context, database.UpdateReportEntryParams{
-				ID:            entry.ID,
-				Amount:        entry.Amount,
-				Carbohydrates: entry.Carbohydrates,
-				Proteins:      entry.Proteins,
-				Fats:          entry.Fats,
-			})
-			if err != nil {
-				slog.Error("UpdateReportEntry", utils.ERROR, err)
-				utils.RespondWithInternalServerError(cwrar.W)
-				return
-			}
-		} else {
-			entriesToCreate = append(entriesToCreate, database.CreateReportEntriesParams{
-				ProductID:     entry.ProductID,
-				ReportID:      dbUpdatedReport.ID,
-				Amount:        entry.Amount,
-				Carbohydrates: entry.Carbohydrates,
-				Proteins:      entry.Proteins,
-				Fats:          entry.Fats,
-			})
-
+	for _, entry := range params.ExistingEntries {
+		_, err = queries.UpdateReportEntry(context, entry)
+		if err != nil {
+			slog.Error("UpdateReportEntry", utils.ERROR, err)
+			utils.RespondWithInternalServerError(cwrar.W)
+			return
 		}
 	}
-	_, err = queries.CreateReportEntries(context, entriesToCreate)
+	err = createReportEntries(queries, context, params.EntriesToCreate, dbUpdatedReport.ID)
 	if err != nil {
 		slog.Error("CreateReportEntries", utils.ERROR, err)
 		utils.RespondWithInternalServerError(cwrar.W)
@@ -125,6 +132,9 @@ func HandleUpdateReport(cwrar *utils.ConfigWithRequestAndResponse, params utils.
 	utils.RespondWithJSON(cwrar.W, http.StatusAccepted, dbUpdatedReport)
 }
 
+// ---------------------------------------------------------------------------------------------------
+// HandleDeleteReport
+// ---------------------------------------------------------------------------------------------------
 func HandleDeleteReport(cwrar *utils.ConfigWithRequestAndResponse) {
 	slog.Error("HandleDeleteReport")
 	reportId, err := utils.GetIdFromURLParam(cwrar.R, utils.REPORT_ID)

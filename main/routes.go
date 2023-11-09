@@ -49,6 +49,7 @@ func v1Router(router chi.Router, config *utils.ApiConfig) {
 	router.Get("/reports/{reportId}/entries", middleware.ConfigInjectorMiddleware(config, handlers.HandleGetReportEntries))
 	router.Delete("/reports/{reportId}", middleware.ConfigInjectorMiddleware(config, handlers.HandleDeleteReport))
 	router.Put("/reports",
+		// handlers.HandleUpdateReport,
 		middleware.ConfigInjectorMiddleware(
 			config,
 			middleware.ParseJSONAndValidateMiddleware[utils.UserUpdateReportWithEntries](handlers.HandleUpdateReport),

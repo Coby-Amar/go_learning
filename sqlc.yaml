@@ -93,14 +93,14 @@ sql:
             go_struct_tag: json:"proteinsTotal"
           - column: '_reports._fats_total'
             go_struct_tag: json:"fatsTotal"
-          - column: '_products._user_id'
+          - column: '_reports._user_id'
             go_struct_tag: json:"-"
 
           - column: '_report_entries._id'
             go_struct_tag: json:"id"
-          - column: '_products._created_at'
+          - column: '_report_entries._created_at'
             go_struct_tag: json:"-"
-          - column: '_products._updated_at'
+          - column: '_report_entries._updated_at'
             go_struct_tag: json:"-"
           - column: '_report_entries._product_id'
             go_struct_tag: json:"productId" validate:"required,uuid4"
@@ -114,5 +114,5 @@ sql:
             go_struct_tag: json:"proteins" validate:"required,min=0"
           - column: '_report_entries._fats'
             go_struct_tag: json:"fats" validate:"required,min=0"
-          - column: '_products._user_id'
+          - column: '_report_entries._user_id'
             go_struct_tag: json:"-"

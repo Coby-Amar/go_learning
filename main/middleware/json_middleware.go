@@ -20,7 +20,7 @@ func parseJSONAndValidateFromRequest[T interface{}](body io.ReadCloser) (T, erro
 	}
 	if validationErr := validator.New().Struct(paramsContainer.params); validationErr != nil {
 		slog.Error("Validate", utils.ERROR, validationErr)
-		return paramsContainer.params, errors.New("Validation failed")
+		return paramsContainer.params, errors.New("validation failed")
 	}
 	return paramsContainer.params, nil
 
